@@ -1,0 +1,7 @@
+[
+  {"author": "jimmy.page@gmail.com", "message": "Initial commit", "timestamp": 1545730073},
+  {"author": "robert.plant@gmail.com", "message": "Install dependencies", "timestamp": 1588719285},
+  {"author": "robert.plant@gmail.com", "message": "Fix bug 1", "timestamp": 1589969082},
+  {"author": "jimmy.page@gmail.com", "message": "Add feature 1", "timestamp": 1590927386},
+  {"author": "john.jones@gmail.com", "message": "Merge PR", "timestamp": 1591798441}
+]
