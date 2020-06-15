@@ -16,8 +16,12 @@ SOURCE_WORKDIR = 'project-src'
 
 
 @pytest.fixture(scope='session')
-def source_repo():
-    """Creates parent and working dirs then initializes a git repo."""
+def init_source_repo():
+    """Sets up and tears down a non-bare git repo.
+
+    Returns:
+        tuple: source_workdir_path, commits_from_json
+    """
     # Create parent directory
     tmp_dir = tempfile.gettempdir()
     parent_dir_path = os.path.join(tmp_dir, PARENT_DIR)
@@ -71,7 +75,7 @@ def source_repo():
             commit_date=commit_dt
         )
 
-    yield source_workdir_path
+    yield source_workdir_path, commits
 
     # Delete the test session directory
     delete_dir(parent_dir_path)
