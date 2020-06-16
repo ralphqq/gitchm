@@ -6,7 +6,7 @@ import tempfile
 from git import Actor, Repo
 import pytest
 
-from tests.utils import create_dir, delete_dir
+from app.utils import create_dir, delete_dir
 
 
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))

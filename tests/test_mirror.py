@@ -6,7 +6,7 @@ from git.exc import GitError
 import pytest
 
 from app.mirror import CommitHistoryMirror
-from tests.utils import create_dir, delete_dir
+from app.utils import create_dir, delete_dir
 
 
 class TestSourceRepoAccess:

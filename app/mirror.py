@@ -6,6 +6,8 @@ from git import Repo
 from app.utils import git_repo_exceptions
 
 
+DEST_REPO_PREFIX = 'mirror'
+
 logger = logging.getLogger()
 
 
@@ -22,3 +24,8 @@ class CommitHistoryMirror:
             self.source_workdir
         )
         self.source_repo = Repo(self.source_workdir)
+
+    @git_repo_exceptions
+    def _init_destination_repo(self) -> None:
+        """Creates and initializes repo where history will be copied."""
+        self.dest_repo_name = f'{DEST_REPO_PREFIX}-{self.source_repo_name}'
