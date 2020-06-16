@@ -8,6 +8,7 @@ Helper functions:
     create_dir(full_path)
     delete_dir(full_path)
 """
+from datetime import datetime
 import functools
 import logging
 import os
@@ -34,14 +35,24 @@ def git_repo_exceptions(func):
 
 # Helper functions
 
-def create_dir(full_path: str, check_first: bool = False) -> None:
-    """Creates directory if it does not yet exist."""
-    if check_first:
-            # Delete existing dir first
-            delete_dir(full_path)
+def create_dir(full_path: str, on_conflict: str = 'raise') -> str:
+    """Creates directory in given path."""
+    already_exists = os.path.exists(full_path)
 
-    if not os.path.exists(full_path):
-        os.makedirs(full_path)
+    if already_exists:
+        if on_conflict == 'raise':
+            raise ValueError(f'{full_path} already exists.')
+        elif on_conflict == 'replace':
+            # Delete existing dir to be re-created later
+            delete_dir(full_path)
+        elif on_conflict == 'resolve':
+            # Append a string to directory name
+            # to make the name unique
+            postfix = datetime.now().strftime('%Y%m%d%H%M%S')
+            full_path = f'{full_path}-{postfix}'
+
+    os.makedirs(full_path)
+    return full_path
 
 
 def delete_dir(full_path: str) -> None:

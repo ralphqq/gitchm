@@ -42,14 +42,19 @@ class TestSourceRepoAccess:
     def non_git_repo(self, init_source_repo):
         """Sets up and tears down a directory that is not a git repo."""
         _, parent_dir, _ = init_source_repo
-        
-        non_git_dir_path = os.path.join(
-            tempfile.gettempdir(),
-            'non-git-repo'
+
+        # Create
+        non_git_dir_path = create_dir(
+            full_path=os.path.join(
+                tempfile.gettempdir(),
+                'non-git-repo'
+            ),
+            on_conflict='replace'
         )
 
-        create_dir(non_git_dir_path, check_first=True)
         yield non_git_dir_path
+
+        # Delete the non-git repo
         delete_dir(non_git_dir_path)
 
     @pytest.fixture(scope='class')

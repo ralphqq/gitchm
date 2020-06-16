@@ -11,12 +11,28 @@ from app.utils import create_dir, delete_dir
 
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 COMMIT_DATAFILE = os.path.join(TEST_DIR, 'data/commits.json')
-PARENT_DIR = 'test-session'
+PARENT_DIR = 'chm-test-session'
 SOURCE_WORKDIR = 'project-src'
 
 
 @pytest.fixture(scope='session')
-def init_source_repo():
+def init_chm_test_session():
+    """Creates and removes the main directory for the test session."""
+    tmp_dir = tempfile.gettempdir()
+    
+    # Create the main directory
+    parent_dir_path = create_dir(
+        full_path=os.path.join(tmp_dir, PARENT_DIR),
+        on_conflict='replace'
+    )
+    yield parent_dir_path
+
+    # Delete the entire main directory
+    delete_dir(parent_dir_path)
+
+
+@pytest.fixture(scope='module')
+def init_source_repo(init_chm_test_session):
     """Sets up and tears down a non-bare git repo.
 
     Yields:
@@ -26,14 +42,13 @@ def init_source_repo():
             commits_from_json,
         
     """
-    # Create parent directory
-    tmp_dir = tempfile.gettempdir()
-    parent_dir_path = os.path.join(tmp_dir, PARENT_DIR)
-    create_dir(parent_dir_path)
+    parent_dir_path = init_chm_test_session
 
     # Create source workdir
-    source_workdir_path = os.path.join(parent_dir_path, SOURCE_WORKDIR)
-    create_dir(source_workdir_path, check_first=True)
+    source_workdir_path = create_dir(
+        full_path=os.path.join(parent_dir_path, SOURCE_WORKDIR),
+        on_conflict='replace'
+    )
 
     # Load data for creating dummy commits
     commits = []
@@ -84,5 +99,5 @@ def init_source_repo():
         commits,
     )
 
-    # Delete the test session directory
-    delete_dir(parent_dir_path)
+    # Delete the source repo directory
+    delete_dir(source_workdir_path)
