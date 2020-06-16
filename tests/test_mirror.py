@@ -2,10 +2,10 @@ import os
 import tempfile
 
 from git import Repo
-from git.exc import GitError
+from git.exc import GitCommandError, GitError
 import pytest
 
-from app.mirror import CommitHistoryMirror
+from app.mirror import CommitHistoryMirror, DEST_REPO_PREFIX
 from app.utils import create_dir, delete_dir
 
 
@@ -15,6 +15,7 @@ class TestSourceRepoAccess:
     def mock_init_repos(self, mocker):
         """Mocks the repo _init methods called in constructor."""
         mocker.patch.object(CommitHistoryMirror, '_init_source_repo')
+        mocker.patch.object(CommitHistoryMirror, '_init_destination_repo')
 
     @pytest.fixture
     def modified_chm(self, init_source_repo):
@@ -75,6 +76,7 @@ class TestSourceRepoAccess:
 
         assert mirror.source_workdir == some_dir
         assert mirror._init_source_repo.called
+        assert mirror._init_destination_repo.called
 
     def test_source_repo_init(self, modified_chm):
         mirror = modified_chm['mirror']
@@ -92,3 +94,19 @@ class TestSourceRepoAccess:
         mirror.source_workdir = non_git_repo
         with pytest.raises(GitError):
             mirror._init_source_repo()
+
+    def test_destination_repo_init(self, modified_chm):
+        mirror = modified_chm['mirror']
+        mirror._init_source_repo()
+        mirror._init_destination_repo()
+
+        source_repo_name = os.path.split(modified_chm['source_workdir'])[-1]
+        dest_parent_dir = os.path.split(mirror.dest_workdir)[0]
+
+        assert Repo(mirror.dest_workdir)
+        assert isinstance(mirror.dest_repo, Repo)
+        assert dest_parent_dir == modified_chm['parent_dir']
+        assert mirror.dest_repo_name == f'{DEST_REPO_PREFIX}-{source_repo_name}'
+        with pytest.raises(GitCommandError):
+            # Raises error because repo has no commits yet
+            list(mirror.dest_repo.iter_commits('master'))
