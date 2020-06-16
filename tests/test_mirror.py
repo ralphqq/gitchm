@@ -2,9 +2,11 @@ import os
 import tempfile
 
 from git import Repo
+from git.exc import GitError
 import pytest
 
 from app.mirror import CommitHistoryMirror
+from tests.utils import create_dir, delete_dir
 
 
 class TestSourceRepoAccess:
@@ -36,6 +38,20 @@ class TestSourceRepoAccess:
             'commits': commit_data,
         }
 
+    @pytest.fixture
+    def non_git_repo(self, init_source_repo):
+        """Sets up and tears down a directory that is not a git repo."""
+        _, parent_dir, _ = init_source_repo
+        
+        non_git_dir_path = os.path.join(
+            tempfile.gettempdir(),
+            'non-git-repo'
+        )
+
+        create_dir(non_git_dir_path, check_first=True)
+        yield non_git_dir_path
+        delete_dir(non_git_dir_path)
+
     @pytest.fixture(scope='class')
     def chm(self, init_source_repo):
         """Initializes CommitHistoryMirror session."""
@@ -65,3 +81,9 @@ class TestSourceRepoAccess:
         assert mirror.source_workdir == modified_chm['source_workdir']
         assert mirror.source_repo_name == source_repo_name
         assert mirror.parent_dir == modified_chm['parent_dir']
+
+    def test_source_repo_init_on_non_git(self, modified_chm, non_git_repo):
+        mirror = modified_chm['mirror']
+        mirror.source_workdir = non_git_repo
+        with pytest.raises(GitError):
+            mirror._init_source_repo()
