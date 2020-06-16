@@ -3,6 +3,8 @@ import os
 
 from git import Repo
 
+from app.utils import git_repo_exceptions
+
 
 logger = logging.getLogger()
 
@@ -13,6 +15,7 @@ class CommitHistoryMirror:
         self.source_workdir = source_workdir
         self._init_source_repo()
 
+    @git_repo_exceptions
     def _init_source_repo(self) -> None:
         self.parent_dir, self.source_repo_name = os.path.split(
             self.source_workdir
