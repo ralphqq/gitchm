@@ -49,7 +49,6 @@ def init_source_repo():
     # Simulate git add-commit workflow for each commit item
     for i, commit_item in enumerate(commits):
         message = commit_item['message']
-        actor_email = commit_item['author']
         commit_dt = datetime.fromtimestamp(commit_item['timestamp']).isoformat()
 
         # Create new file
@@ -61,12 +60,12 @@ def init_source_repo():
 
         # Create author and committer
         author = Actor(
-            name='Author',
-            email=actor_email
+            name=commit_item['author_name'],
+            email=commit_item['author_email']
         )
         committer = Actor(
-            name='Committer',
-            email=actor_email
+            name=commit_item['committer_name'],
+            email=commit_item['committer_email']
         )
 
         # Stage and commit the created file
