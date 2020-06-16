@@ -17,6 +17,7 @@ class CommitHistoryMirror:
 
     @git_repo_exceptions
     def _init_source_repo(self) -> None:
+        """Accesses git repo located in `self.source_workdir`."""
         self.parent_dir, self.source_repo_name = os.path.split(
             self.source_workdir
         )
