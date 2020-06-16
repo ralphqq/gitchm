@@ -19,8 +19,12 @@ SOURCE_WORKDIR = 'project-src'
 def init_source_repo():
     """Sets up and tears down a non-bare git repo.
 
-    Returns:
-        tuple: source_workdir_path, commits_from_json
+    Yields:
+        tuple: (
+            source_workdir_path,
+            parent_dir_path,
+            commits_from_json,
+        
     """
     # Create parent directory
     tmp_dir = tempfile.gettempdir()
@@ -75,7 +79,11 @@ def init_source_repo():
             commit_date=commit_dt
         )
 
-    yield source_workdir_path, commits
+    yield (
+        source_workdir_path,
+        parent_dir_path,
+        commits,
+    )
 
     # Delete the test session directory
     delete_dir(parent_dir_path)
