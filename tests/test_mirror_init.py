@@ -1,5 +1,6 @@
 import os
 import tempfile
+from unittest.mock import patch
 
 from git import Repo
 from git.exc import GitCommandError, GitError
@@ -38,6 +39,11 @@ class TestMirrorOverallInit:
         assert not mirror._init_empty_dest_repo.called
         assert mirror._init_existing_dest_repo.called_once_with(some_other_dir)
 
+    def test_mirror_init_with_same_dest_workdir(self, mock_init_repos):
+        some_dir = '/tmp/foo/bar'
+        with pytest.raises(ValueError):
+            mirror = CommitHistoryMirror(some_dir, some_dir)
+
 
 class TestSourceAndDestinationRepoInit:
 
@@ -72,8 +78,6 @@ class TestSourceAndDestinationRepoInit:
         # Delete the non-git repo
         delete_dir(non_git_dir_path)
 
-    
-
     def test_source_repo_init(self, modified_chm):
         mirror = modified_chm['mirror']
         mirror._init_source_repo()
@@ -91,7 +95,7 @@ class TestSourceAndDestinationRepoInit:
         with pytest.raises(GitError):
             mirror._init_source_repo()
 
-    def test_destination_repo_init(self, modified_chm):
+    def test_empty_dest_repo_init(self, modified_chm):
         mirror = modified_chm['mirror']
         mirror._init_source_repo()
         mirror._init_empty_dest_repo()
@@ -106,3 +110,25 @@ class TestSourceAndDestinationRepoInit:
         with pytest.raises(GitCommandError):
             # Raises error because repo has no commits yet
             list(mirror.dest_repo.iter_commits('master'))
+
+    def test_existing_non_git_dest_repo_init(self, modified_chm, non_git_repo):
+        mirror = modified_chm['mirror']
+        mirror._init_source_repo()
+
+        with patch.object(Repo, 'init') as mock_repo_init:
+            mirror._init_existing_dest_repo(non_git_repo)
+            assert mock_repo_init.called_once_with(non_git_repo)
+        assert mirror.dest_workdir == non_git_repo
+
+    def test_existing_git_dest_repo_init(self, modified_chm, non_git_repo):
+        mirror = modified_chm['mirror']
+        mirror._init_source_repo()
+
+        # Convert the non-git dir into a git repo
+        # before calling the dest initialization method
+        Repo.init(non_git_repo)
+
+        with patch.object(Repo, 'init') as mock_repo_init:
+            mirror._init_existing_dest_repo(non_git_repo)
+            assert not mock_repo_init.called
+        assert mirror.dest_workdir == non_git_repo

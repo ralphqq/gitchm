@@ -2,6 +2,8 @@ import logging
 import os
 
 from git import Repo
+from git.exc import InvalidGitRepositoryError
+
 
 from app.utils import create_dir, git_repo_exceptions
 
@@ -19,6 +21,12 @@ class CommitHistoryMirror:
         if not dest_workdir:
             self._init_empty_dest_repo()
         else:
+            # Make sure source and destination directories are not the same 
+            # before calling repo initialization
+            if source_workdir == dest_workdir:
+                raise ValueError(
+                    'Source repo must not be the same as destination repo'
+                )
             self._init_existing_dest_repo(dest_workdir)
 
     @git_repo_exceptions
@@ -51,4 +59,15 @@ class CommitHistoryMirror:
     @git_repo_exceptions
     def _init_existing_dest_repo(self, dest_workdir: str) -> None:
         """Initializes existing destination repo."""
-        pass
+        self.dest_workdir = dest_workdir
+        try:
+            # Try if the path points to a valid git repo
+            self.dest_repo = Repo(dest_workdir)
+            logger.info(f'Directory {dest_workdir} is a valid git repo.')
+        except InvalidGitRepositoryError:
+            # Initialize dir as git repo
+            logger.info(
+                f'Directory {dest_workdir} is not a git repo. '
+                f'Initializing it as a repository'
+            )
+            self.dest_repo = Repo.init(dest_workdir)
