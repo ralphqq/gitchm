@@ -13,10 +13,13 @@ logger = logging.getLogger()
 
 class CommitHistoryMirror:
 
-    def __init__(self, source_workdir: str) -> None:
+    def __init__(self, source_workdir: str, dest_workdir: str = '') -> None:
         self.source_workdir = source_workdir
         self._init_source_repo()
-        self._init_empty_dest_repo()
+        if not dest_workdir:
+            self._init_empty_dest_repo()
+        else:
+            self._init_existing_dest_repo(dest_workdir)
 
     @git_repo_exceptions
     def _init_source_repo(self) -> None:
@@ -44,3 +47,8 @@ class CommitHistoryMirror:
 
         # Initialize empty git repo
         self.dest_repo = Repo.init(self.dest_workdir)
+
+    @git_repo_exceptions
+    def _init_existing_dest_repo(self, dest_workdir: str) -> None:
+        """Initializes existing destination repo."""
+        pass

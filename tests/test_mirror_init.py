@@ -17,6 +17,7 @@ class TestMirrorInit:
         """Mocks the repo _init methods called in constructor."""
         mocker.patch.object(CommitHistoryMirror, '_init_source_repo')
         mocker.patch.object(CommitHistoryMirror, '_init_empty_dest_repo')
+        mocker.patch.object(CommitHistoryMirror, '_init_existing_dest_repo')
 
     @pytest.fixture
     def modified_chm(self, init_source_repo):
@@ -49,13 +50,24 @@ class TestMirrorInit:
         # Delete the non-git repo
         delete_dir(non_git_dir_path)
 
-    def test_mirror_initialization(self, mock_init_repos):
+    def test_mirror_init_with_no_dest_workdir(self, mock_init_repos):
         some_dir = '/tmp/foo/bar'
         mirror = CommitHistoryMirror(some_dir)
 
         assert mirror.source_workdir == some_dir
         assert mirror._init_source_repo.called
         assert mirror._init_empty_dest_repo.called
+        assert not mirror._init_existing_dest_repo.called
+
+    def test_mirror_init_with_dest_workdir(self, mock_init_repos):
+        some_dir = '/tmp/foo/bar'
+        some_other_dir = '/tmp/spam/eggs'
+        mirror = CommitHistoryMirror(some_dir, some_other_dir)
+
+        assert mirror.source_workdir == some_dir
+        assert mirror._init_source_repo.called
+        assert not mirror._init_empty_dest_repo.called
+        assert mirror._init_existing_dest_repo.called_once_with(some_other_dir)
 
     def test_source_repo_init(self, modified_chm):
         mirror = modified_chm['mirror']
