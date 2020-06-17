@@ -20,7 +20,7 @@ class TestMirrorInit:
 
     @pytest.fixture
     def modified_chm(self, init_source_repo):
-        """Modifies CommitHistoryMirror class."""
+        """Creates an instance of a ModifiedCHM object."""
         source_workdir, parent_dir_path, commit_data = init_source_repo
         mirror = ModifiedCHM(source_workdir)
         return {
