@@ -7,6 +7,7 @@ import pytest
 
 from app.mirror import CommitHistoryMirror, DEST_REPO_PREFIX
 from app.utils import create_dir, delete_dir
+from tests.utils import ModifiedCHM
 
 
 class TestMirrorInit:
@@ -21,19 +22,9 @@ class TestMirrorInit:
     def modified_chm(self, init_source_repo):
         """Modifies CommitHistoryMirror class."""
         source_workdir, parent_dir_path, commit_data = init_source_repo
-
-        class ModifiedCHM(CommitHistoryMirror):
-            """Overrides parent class's __init__ method.
-
-            This makes it possible to separately test each 
-            method called in the original class's __init__ method.
-            """
-
-            def __init__(self):
-                self.source_workdir = source_workdir
-
+        mirror = ModifiedCHM(source_workdir)
         return {
-            'mirror': ModifiedCHM(),
+            'mirror': mirror,
             'source_workdir': source_workdir,
             'parent_dir': parent_dir_path,
             'commits': commit_data,
