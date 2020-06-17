@@ -9,7 +9,7 @@ from app.mirror import CommitHistoryMirror, DEST_REPO_PREFIX
 from app.utils import create_dir, delete_dir
 
 
-class TestSourceRepoAccess:
+class TestMirrorInit:
 
     @pytest.fixture
     def mock_init_repos(self, mocker):
