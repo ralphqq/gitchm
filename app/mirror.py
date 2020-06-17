@@ -16,7 +16,7 @@ class CommitHistoryMirror:
     def __init__(self, source_workdir: str) -> None:
         self.source_workdir = source_workdir
         self._init_source_repo()
-        self._init_destination_repo()
+        self._init_empty_dest_repo()
 
     @git_repo_exceptions
     def _init_source_repo(self) -> None:
@@ -27,8 +27,8 @@ class CommitHistoryMirror:
         self.source_repo = Repo(self.source_workdir)
 
     @git_repo_exceptions
-    def _init_destination_repo(self) -> None:
-        """Creates and initializes repo where history will be copied."""
+    def _init_empty_dest_repo(self) -> None:
+        """Creates and initializes empty destination repo."""
         # Create the destination workdir
         dest_repo_name = f'{DEST_REPO_PREFIX}-{self.source_repo_name}'
         self.dest_workdir = create_dir(

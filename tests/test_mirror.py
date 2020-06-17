@@ -15,7 +15,7 @@ class TestSourceRepoAccess:
     def mock_init_repos(self, mocker):
         """Mocks the repo _init methods called in constructor."""
         mocker.patch.object(CommitHistoryMirror, '_init_source_repo')
-        mocker.patch.object(CommitHistoryMirror, '_init_destination_repo')
+        mocker.patch.object(CommitHistoryMirror, '_init_empty_dest_repo')
 
     @pytest.fixture
     def modified_chm(self, init_source_repo):
@@ -76,7 +76,7 @@ class TestSourceRepoAccess:
 
         assert mirror.source_workdir == some_dir
         assert mirror._init_source_repo.called
-        assert mirror._init_destination_repo.called
+        assert mirror._init_empty_dest_repo.called
 
     def test_source_repo_init(self, modified_chm):
         mirror = modified_chm['mirror']
@@ -98,7 +98,7 @@ class TestSourceRepoAccess:
     def test_destination_repo_init(self, modified_chm):
         mirror = modified_chm['mirror']
         mirror._init_source_repo()
-        mirror._init_destination_repo()
+        mirror._init_empty_dest_repo()
 
         source_repo_name = os.path.split(modified_chm['source_workdir'])[-1]
         dest_parent_dir = os.path.split(mirror.dest_workdir)[0]
