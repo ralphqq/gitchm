@@ -58,18 +58,6 @@ class TestMirrorInit:
         # Delete the non-git repo
         delete_dir(non_git_dir_path)
 
-    @pytest.fixture(scope='class')
-    def chm(self, init_source_repo):
-        """Initializes CommitHistoryMirror session."""
-        source_repo_path, parent_dir_path, commit_data = init_source_repo
-        mirror = CommitHistoryMirror(source_repo_path)
-        return {
-            'mirror': mirror,
-            'source_workdir': source_repo_path,
-            'parent_dir': parent_dir_path,
-            'commits': commit_data,
-        }
-
     def test_mirror_initialization(self, mock_init_repos):
         some_dir = '/tmp/foo/bar'
         mirror = CommitHistoryMirror(some_dir)
