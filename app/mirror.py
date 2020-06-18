@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class CommitHistoryMirror:
+    """Represents commit history mirroring session."""
 
     def __init__(
             self,
@@ -19,6 +20,19 @@ class CommitHistoryMirror:
             dest_workdir: str = '',
             prefix: dict = 'mirror'
         ) -> None:
+        """Sets up and initializes the mirror session.
+
+        Args:
+            source_workdir (str): Absolute path to the source repo
+                dest_workdir (str): Absolute path to the destination 
+                repo (optional); if not provided, the destination 
+                working directory  will be automatically created
+            prefix (str): The prefixof the automatically generated 
+                destination working directory (defaults to 'mirror')
+
+        Raises:
+            ValueError: if source_workdir is the same as dest_workdir
+        """
         self.source_workdir = source_workdir
         self.dest_prefix = prefix
         self._init_source_repo()
