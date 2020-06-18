@@ -8,15 +8,19 @@ from git.exc import InvalidGitRepositoryError
 from app.utils import create_dir, git_repo_exceptions
 
 
-DEST_REPO_PREFIX = 'mirror'
-
 logger = logging.getLogger(__name__)
 
 
 class CommitHistoryMirror:
 
-    def __init__(self, source_workdir: str, dest_workdir: str = '') -> None:
+    def __init__(
+            self,
+            source_workdir: str,
+            dest_workdir: str = '',
+            prefix: dict = 'mirror'
+        ) -> None:
         self.source_workdir = source_workdir
+        self.dest_prefix = prefix
         self._init_source_repo()
         self.dest_exists = False    # True if `dest_workdir` is given
 
@@ -50,7 +54,7 @@ class CommitHistoryMirror:
         logger.debug('Creating new destination directory and repo')
 
         # Create the destination workdir
-        dest_repo_name = f'{DEST_REPO_PREFIX}-{self.source_repo_name}'
+        dest_repo_name = f'{self.dest_prefix}-{self.source_repo_name}'
         self.dest_workdir = create_dir(
             full_path=os.path.join(
                 self.parent_dir,

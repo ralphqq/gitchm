@@ -18,6 +18,7 @@ from app.mirror import CommitHistoryMirror
 
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 COMMIT_DATAFILE = os.path.join(TEST_DIR, 'data/commits.json')
+DEST_REPO_PREFIX = 'mirror'
 
 
 # Helper functions
@@ -90,7 +91,9 @@ class ModifiedCHM(CommitHistoryMirror):
     def __init__(
             self,
             source_workdir: str = '',
-            dest_workdir: str = ''
+            dest_workdir: str = '',
+            prefix: str = DEST_REPO_PREFIX
         ) -> None:
         self.source_workdir = source_workdir
         self.dest_workdir = dest_workdir
+        self.dest_prefix = prefix

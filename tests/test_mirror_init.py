@@ -6,9 +6,9 @@ from git import Repo
 from git.exc import GitCommandError, GitError
 import pytest
 
-from app.mirror import CommitHistoryMirror, DEST_REPO_PREFIX
+from app.mirror import CommitHistoryMirror
 from app.utils import create_dir, delete_dir
-from tests.utils import ModifiedCHM
+from tests.utils import DEST_REPO_PREFIX, ModifiedCHM
 
 
 class TestMirrorOverallInit:
@@ -29,6 +29,7 @@ class TestMirrorOverallInit:
         assert mirror._init_empty_dest_repo.called
         assert not mirror._init_existing_dest_repo.called
         assert not mirror.dest_exists
+        assert mirror.dest_prefix == 'mirror'
 
     def test_mirror_init_with_dest_workdir(self, mock_init_repos):
         some_dir = '/tmp/foo/bar'
@@ -45,6 +46,12 @@ class TestMirrorOverallInit:
         some_dir = '/tmp/foo/bar'
         with pytest.raises(ValueError):
             mirror = CommitHistoryMirror(some_dir, some_dir)
+
+    def test_mirror_init_with_dest_prefix(self, mock_init_repos):
+        some_dir = '/tmp/foo/bar'
+        dest_prefix = 'another-prefix'
+        mirror = CommitHistoryMirror(some_dir, prefix=dest_prefix)
+        assert mirror.dest_prefix == dest_prefix
 
 
 class TestSourceAndDestinationRepoInit:
