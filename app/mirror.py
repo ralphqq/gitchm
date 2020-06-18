@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 
@@ -103,3 +104,39 @@ class CommitHistoryMirror:
         logger.info(
             f'Initialized existing destination repo {self.dest_workdir}'
         )
+
+    async def reflect(
+            self,
+            author_emails: list,
+            committer_emails: list = None,
+            before: int = None,
+            after: int = None,
+            strict: bool = True
+        ) -> None:
+        """Executes the commit mirroring process.
+
+        Args:
+            author_emails (list): A list of email addresses to filter 
+                commits from source repo; only commits with authors in 
+                this list will be reflected in the destination repo
+            committer_emails (list): A list of email addresses to filter 
+                commits from source repo; exact filtering behavior will 
+                depend on the value of the `strict` parameter (see 
+                below); if no value for `committer_emails` is provided, 
+                only the author emails will be used for filtering
+            before (int): UNIX timestamp to filter commits from source 
+                repo; only commits made prior to this timestamp will be 
+                reflected in the destination repo; this parameter is 
+                optional
+            after (int): UNIX timestamp to filter commits from source 
+                repo; only commits made after this timestamp will be 
+                reflected in the destination repo; this parameter is 
+                optional
+            strict (bool): If True, only commits whose author is in 
+                `author_emails` AND whose committer is in `committer_emails` 
+                will be reflected in the destination repo; otherwise, 
+                commits will be included if either the author OR 
+                committer is found in the respective lists; default is 
+                True
+        """
+        pass
