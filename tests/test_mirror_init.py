@@ -28,6 +28,7 @@ class TestMirrorOverallInit:
         assert mirror._init_source_repo.called
         assert mirror._init_empty_dest_repo.called
         assert not mirror._init_existing_dest_repo.called
+        assert not mirror.dest_exists
 
     def test_mirror_init_with_dest_workdir(self, mock_init_repos):
         some_dir = '/tmp/foo/bar'
@@ -38,6 +39,7 @@ class TestMirrorOverallInit:
         assert mirror._init_source_repo.called
         assert not mirror._init_empty_dest_repo.called
         assert mirror._init_existing_dest_repo.called_once_with(some_other_dir)
+        assert mirror.dest_exists
 
     def test_mirror_init_with_same_dest_workdir(self, mock_init_repos):
         some_dir = '/tmp/foo/bar'

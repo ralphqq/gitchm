@@ -18,6 +18,8 @@ class CommitHistoryMirror:
     def __init__(self, source_workdir: str, dest_workdir: str = '') -> None:
         self.source_workdir = source_workdir
         self._init_source_repo()
+        self.dest_exists = False    # True if `dest_workdir` is given
+
         if not dest_workdir:
             self._init_empty_dest_repo()
         else:
@@ -27,6 +29,7 @@ class CommitHistoryMirror:
                 raise ValueError(
                     'Source repo must not be the same as destination repo'
                 )
+            self.dest_exists = True
             self._init_existing_dest_repo(dest_workdir)
 
     @git_repo_exceptions
