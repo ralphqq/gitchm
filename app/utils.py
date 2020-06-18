@@ -17,7 +17,7 @@ import shutil
 from git.exc import GitError
 
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 # Decorators
 
