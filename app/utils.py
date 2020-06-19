@@ -7,6 +7,7 @@ Decorators:
 Helper functions:
     create_dir(full_path)
     delete_dir(full_path)
+    clean_dict(orig_dict)
 """
 from datetime import datetime
 import functools
@@ -59,3 +60,8 @@ def delete_dir(full_path: str) -> None:
     """Deletes given path if it exists."""
     if os.path.exists(full_path):
         shutil.rmtree(full_path)
+
+
+def clean_dict(orig_dict: dict) -> dict:
+    """Removes items with null values from dict."""
+    return {k: v for k, v in orig_dict.items() if v is not None}
