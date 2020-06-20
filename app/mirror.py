@@ -114,7 +114,7 @@ class CommitHistoryMirror:
             author: str = '',
             committer: str = '',
             before: Union[int, str] = '',
-            after: Union[int, str] = None,
+            after: Union[int, str] = '',
             source_branch: str = 'master',
             dest_branch: str = ''
         ) -> None:
@@ -136,6 +136,12 @@ class CommitHistoryMirror:
                 provided, this will be set to the same branch as 
                 `source_branch`
         """
+        logger.debug('Preparing to replicate commits')
+
+        # Set active branch in destination repo
+        dest_branch = dest_branch if dest_branch else source_branch
+        self._set_active_dest_branch(dest_branch)
+
         # Set up git-rev-list-options
         options = clean_dict({
             'rev': source_branch,
@@ -147,7 +153,9 @@ class CommitHistoryMirror:
         })
 
         try:
-            logger.info(f'Fetching commits using options {options}')
+            logger.info(
+                f'Fetching commits from source repo using options {options}'
+            )
             commits = self.source_repo.iter_commits(**options)
             await self._replicate(commits)
 
@@ -179,4 +187,8 @@ class CommitHistoryMirror:
                 - 'skipped'
                 - 'error'
         """
+        pass
+
+    def _set_active_dest_branch(self, dest_branch: str) -> None:
+        """Sets active branch in destination repo."""
         pass
