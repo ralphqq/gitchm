@@ -138,34 +138,32 @@ class CommitHistoryMirror:
         """
         logger.debug('Preparing to replicate commits')
 
-        # Set active branch in destination repo
-        dest_branch = dest_branch if dest_branch else source_branch
-        self._set_active_dest_branch(dest_branch)
-
-        # Set up git-rev-list-options
-        options = clean_dict({
-            'rev': source_branch,
-            'author': author or None,
-            'committer': committer or None,
-            'before': before or None,
-            'after': after or None,
-            'regexp_ignore_case': True,
-        })
-
         try:
+                # Set active branch in destination repo
+            dest_branch = dest_branch if dest_branch else source_branch
+            self._set_active_dest_branch(dest_branch)
+
+            # Set up git-rev-list-options
+            options = clean_dict({
+                'rev': source_branch,
+                'author': author or None,
+                'committer': committer or None,
+                'before': before or None,
+                'after': after or None,
+                'regexp_ignore_case': True,
+            })
+
             logger.info(
                 f'Fetching commits from source repo using options {options}'
             )
             commits = self.source_repo.iter_commits(**options)
             await self._replicate(commits)
+            logger.info('Finished replicating commit history')
 
         except Exception as e:
             logger.error(
                 f'Unhandled error during commit history replication: {e}'
             )
-
-        else:
-            logger.info('Finished replicating commit history')
 
     async def _replicate(
             self,
