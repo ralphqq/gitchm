@@ -1,13 +1,16 @@
 import asyncio
 import logging
 import os
-from typing import Union
+from typing import Generator, Union
 
-from git import Repo
+from git import Commit, Repo
 from git.exc import InvalidGitRepositoryError
 
-
-from app.utils import create_dir, git_repo_exceptions
+from app.utils import (
+    clean_dict,
+    create_dir,
+    git_repo_exceptions,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -132,5 +135,48 @@ class CommitHistoryMirror:
                 the fetched commits will be replicated in; if not 
                 provided, this will be set to the same branch as 
                 `source_branch`
+        """
+        # Set up git-rev-list-options
+        options = clean_dict({
+            'rev': source_branch,
+            'author': author or None,
+            'committer': committer or None,
+            'before': before or None,
+            'after': after or None,
+            'regexp_ignore_case': True,
+        })
+
+        try:
+            logger.info(f'Fetching commits using options {options}')
+            commits = self.source_repo.iter_commits(**options)
+            await self._replicate(commits)
+
+        except Exception as e:
+            logger.error(
+                f'Unhandled error during commit history replication: {e}'
+            )
+
+        else:
+            logger.info('Finished replicating commit history')
+
+    async def _replicate(
+            self,
+            commits: Generator[Commit, None, None]
+        ) -> None:
+        """Wraps replication as async tasks and runs them in parallel."""
+        tasks = [
+            self._commit(i, commit) for i, commit in enumerate(commits)
+        ]
+        for coro in asyncio.as_completed(tasks):
+            result = await coro
+
+    async def _commit(self, n: int, commit_item: Commit) -> str:
+        """Makes the commit into the destination repo.
+
+        Returns:
+            str: short text describing commit outcome, can be one of:
+                - 'ok'
+                - 'skipped'
+                - 'error'
         """
         pass
