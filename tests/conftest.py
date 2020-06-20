@@ -61,3 +61,23 @@ def init_source_repo(init_chm_test_session):
 
     # Delete the source repo directory
     delete_dir(source_workdir_path)
+
+
+@pytest.fixture
+def non_git_repo(init_source_repo):
+    """Sets up and tears down a directory that is not a git repo."""
+    _, parent_dir, _ = init_source_repo
+
+    # Create
+    non_git_dir_path = create_dir(
+        full_path=os.path.join(
+            tempfile.gettempdir(),
+            'non-git-repo'
+        ),
+        on_conflict='replace'
+    )
+
+    yield non_git_dir_path
+
+    # Delete the non-git repo
+    delete_dir(non_git_dir_path)
