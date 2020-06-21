@@ -41,7 +41,9 @@ class CommitHistoryMirror:
         self.source_workdir = source_workdir
         self.dest_prefix = prefix
         self._init_source_repo()
-        self.dest_exists = False    # True if `dest_workdir` is given
+
+        # True if `dest_workdir` is given:
+        self.prior_dest_exists = False
 
         if not dest_workdir:
             self._init_empty_dest_repo()
@@ -52,7 +54,7 @@ class CommitHistoryMirror:
                 raise ValueError(
                     'Source repo must not be the same as destination repo'
                 )
-            self.dest_exists = True
+            self.prior_dest_exists = True
             self._init_existing_dest_repo(dest_workdir)
 
         logger.debug('Initialized mirror; mirror ready for use')
