@@ -189,4 +189,27 @@ class CommitHistoryMirror:
 
     def _set_active_dest_branch(self, dest_branch: str) -> None:
         """Sets active branch in destination repo."""
-        pass
+        logger.debug(f'Switching to branch {dest_branch} in destination repo')
+        if self.dest_repo.active_branch.name == dest_branch:
+            # Target branch is already active
+            logger.info(f'{dest_branch} is already the active branch')
+            return None
+
+        branch_type = 'existing'
+        for branch in self.dest_repo.branches:
+            if branch.name == dest_branch:
+                logger.debug(f'Found existing branch {dest_branch}')
+                branch.checkout()
+                break
+
+        else:   # same level as for loop
+            # Target branch is new, so create it
+            # before checking it out
+            self.dest_repo.heads.master.checkout(b=dest_branch)
+            logger.debug(f'Created new branch {dest_branch}')
+            branch_type = 'new'
+
+        logger.info(
+            f'Switched to {branch_type} branch '
+            f'{dest_branch} in destination repo'
+        )
