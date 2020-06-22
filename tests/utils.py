@@ -97,3 +97,4 @@ class ModifiedCHM(CommitHistoryMirror):
         self.source_workdir = source_workdir
         self.dest_workdir = dest_workdir
         self.dest_prefix = prefix
+        self.prior_dest_exists = False

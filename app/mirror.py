@@ -54,7 +54,6 @@ class CommitHistoryMirror:
                 raise ValueError(
                     'Source repo must not be the same as destination repo'
                 )
-            self.prior_dest_exists = True
             self._init_existing_dest_repo(dest_workdir)
 
         logger.debug('Initialized mirror; mirror ready for use')
@@ -96,10 +95,13 @@ class CommitHistoryMirror:
         """Initializes existing destination repo."""
         logger.debug(f'Analyzing destination directory {dest_workdir}')
         self.dest_workdir = dest_workdir
+        
         try:
             # Try if the path points to a valid git repo
             self.dest_repo = Repo(dest_workdir)
             logger.debug(f'Directory {dest_workdir} is a valid git repo.')
+            self.prior_dest_exists = True
+
         except InvalidGitRepositoryError:
             # Initialize dir as git repo
             logger.debug(
@@ -141,9 +143,11 @@ class CommitHistoryMirror:
         logger.debug('Preparing to replicate commits')
 
         try:
-                # Set active branch in destination repo
-            dest_branch = dest_branch if dest_branch else source_branch
-            self._set_active_dest_branch(dest_branch)
+            # Check if dest repo is new or prior repo
+            # Then set active branch in destination repo
+            if self.prior_dest_exists:
+                dest_branch = dest_branch if dest_branch else source_branch
+                self._set_active_dest_branch(dest_branch)
 
             # Set up git-rev-list-options
             options = clean_dict({

@@ -65,6 +65,7 @@ class TestSourceAndDestinationRepoInit:
             mirror._init_existing_dest_repo(non_git_repo)
             assert mock_repo_init.called_once_with(non_git_repo)
         assert mirror.dest_workdir == non_git_repo
+        assert not mirror.prior_dest_exists
 
     def test_existing_git_dest_repo_init(self, modified_chm, non_git_repo):
         mirror = modified_chm['mirror']
@@ -78,3 +79,4 @@ class TestSourceAndDestinationRepoInit:
             mirror._init_existing_dest_repo(non_git_repo)
             assert not mock_repo_init.called
         assert mirror.dest_workdir == non_git_repo
+        assert mirror.prior_dest_exists
