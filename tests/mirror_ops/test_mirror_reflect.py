@@ -18,6 +18,11 @@ class TestMirrorOpsReflect:
             attribute='_set_active_dest_branch'
         )
         mocker.patch.object(
+            target=CommitHistoryMirror,
+            attribute='_get_commit_hashes',
+            return_value=['abc', 'xyz', 'hjk']
+        )
+        mocker.patch.object(
             target=Repo,
             attribute='iter_commits',
             side_effect=iter_commits
@@ -45,6 +50,8 @@ class TestMirrorOpsReflect:
         m = mirror_new_dest
         await m.reflect()
         assert not m._set_active_dest_branch.called
+        assert not m._get_commit_hashes.called
+        assert not m.dest_commit_hashes
         assert m.dest_head_commit is None
         assert Repo.iter_commits.call_args.kwargs == params
         assert m._replicate.called
@@ -57,6 +64,8 @@ class TestMirrorOpsReflect:
         await m.reflect()
         assert m._set_active_dest_branch.called_once_with(branch)
         assert m.dest_head_commit == m.dest_repo.head.commit
+        assert m._get_commit_hashes.called_once_with('dest', branch)
+        assert isinstance(m.dest_commit_hashes, list)
         assert Repo.iter_commits.call_args.kwargs == params
         assert m._replicate.called
 
@@ -72,6 +81,8 @@ class TestMirrorOpsReflect:
 
         assert not m._set_active_dest_branch.called
         assert m.dest_head_commit is None
+        assert not m._get_commit_hashes.called
+        assert not m.dest_commit_hashes
         assert not Repo.iter_commits.called
         assert not m._replicate.called
 
@@ -101,6 +112,8 @@ class TestMirrorOpsReflect:
         )
         assert not m._set_active_dest_branch.called
         assert m.dest_head_commit is None
+        assert not m._get_commit_hashes.called
+        assert not m.dest_commit_hashes
         assert Repo.iter_commits.call_args.kwargs == params
         assert m._replicate.called
 
@@ -132,6 +145,8 @@ class TestMirrorOpsReflect:
         )
         assert m._set_active_dest_branch.called_once_with(dest_branch)
         assert m.dest_head_commit == m.dest_repo.head.commit
+        assert m._get_commit_hashes.called_once_with('dest', dest_branch)
+        assert isinstance(m.dest_commit_hashes, list)
         assert Repo.iter_commits.call_args.kwargs == params
         assert m._replicate.called
 

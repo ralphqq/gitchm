@@ -46,14 +46,17 @@ class CommitHistoryMirror:
         # to be set in _set_active_dest_branch() method
         self.prior_dest_exists = False
 
-        # The current head of the active branch,
+        # The current head and list of commits in  the active
+        # branch of the dest repo,
         # will only be not None when the dest repo 
         # has valid working tree head,
         # Also to be set in _set_active_dest_branch() method
         self.dest_head_commit = None
+        self.dest_commit_hashes = []
 
         if not dest_workdir:
             self._init_empty_dest_repo()
+            
         else:
             # Make sure source and destination directories are not the same 
             # before calling repo initialization
@@ -61,6 +64,7 @@ class CommitHistoryMirror:
                 raise ValueError(
                     'Source repo must not be the same as destination repo'
                 )
+
             self._init_existing_dest_repo(dest_workdir)
 
         logger.debug('Initialized mirror; mirror ready for use')
@@ -170,6 +174,10 @@ class CommitHistoryMirror:
                 dest_branch = dest_branch if dest_branch else source_branch
                 self._set_active_dest_branch(dest_branch)
                 self.dest_head_commit = self.dest_repo.head.commit
+                self.dest_commit_hashes = self._get_commit_hashes(
+                    repo_name='dest',
+                    branch=dest_branch
+                )
 
             # Set up git-rev-list-options
             options = clean_dict({
@@ -241,3 +249,38 @@ class CommitHistoryMirror:
             f'Switched to {branch_type} branch '
             f'{dest_branch} in destination repo'
         )
+
+    def _get_commit_hashes(
+        self,
+        repo_name: str,
+        branch: str = 'master'
+    ) -> list:
+        """Returns list of commit hashes (hex SHA).
+
+        Args:
+            repo_name (str): Can either be 'source' or 'dest'
+            branch (str): Name of branch in repo, defaults to 'master'
+
+        Raises:
+            ValueError: if `repo_name` is neither 'source' nor 'dest'
+        """
+        logger.debug(
+            f'Checking existing commits in {branch} of {repo_name} repo'
+        )
+        repo = None
+
+        if repo_name.lower() in ['source', 'src']:
+            repo = self.source_repo
+        elif repo_name.lower() in ['destination', 'dest']:
+            repo = self.dest_repo
+        else:
+            raise ValueError(
+                "Value for `repo_name` must be 'source' or 'dest'"
+            )
+
+        commits = [c.hexsha for c in repo.iter_commits(branch)]
+        logger.info(
+            f'Found {len(commits)} existing commits in '
+            f'branch {branch} of {repo.working_dir}'
+        )
+        return commits
