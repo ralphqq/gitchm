@@ -77,6 +77,15 @@ def dest_repo_feature(dest_repo_master):
     for branch in repo.branches:
         if branch.name == FEATURE_BRANCH:
             branch.checkout()
+
+    # Add new file and commit changes
+    new_file = 'newfile.txt'
+    new_file_path = os.path.join(repo.working_dir, new_file)
+    with open(new_file_path, 'w') as f:
+        f.write('The quick brown fox')
+    repo.index.add(new_file_path)
+    repo.index.commit('New file in feature')
+
     yield repo
     repo.heads.master.checkout()
 
