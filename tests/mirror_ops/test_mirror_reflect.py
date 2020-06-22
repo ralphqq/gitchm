@@ -45,6 +45,7 @@ class TestMirrorOpsReflect:
         m = mirror_new_dest
         await m.reflect()
         assert not m._set_active_dest_branch.called
+        assert m.dest_head_commit is None
         assert Repo.iter_commits.call_args.kwargs == params
         assert m._replicate.called
 
@@ -55,6 +56,7 @@ class TestMirrorOpsReflect:
         m = mirror_old_dest
         await m.reflect()
         assert m._set_active_dest_branch.called_once_with(branch)
+        assert m.dest_head_commit == m.dest_repo.head.commit
         assert Repo.iter_commits.call_args.kwargs == params
         assert m._replicate.called
 
@@ -69,6 +71,7 @@ class TestMirrorOpsReflect:
             await m.reflect(dest_branch=dest_branch)
 
         assert not m._set_active_dest_branch.called
+        assert m.dest_head_commit is None
         assert not Repo.iter_commits.called
         assert not m._replicate.called
 
@@ -97,6 +100,7 @@ class TestMirrorOpsReflect:
             source_branch=source_branch
         )
         assert not m._set_active_dest_branch.called
+        assert m.dest_head_commit is None
         assert Repo.iter_commits.call_args.kwargs == params
         assert m._replicate.called
 
@@ -127,6 +131,7 @@ class TestMirrorOpsReflect:
             dest_branch=dest_branch
         )
         assert m._set_active_dest_branch.called_once_with(dest_branch)
+        assert m.dest_head_commit == m.dest_repo.head.commit
         assert Repo.iter_commits.call_args.kwargs == params
         assert m._replicate.called
 

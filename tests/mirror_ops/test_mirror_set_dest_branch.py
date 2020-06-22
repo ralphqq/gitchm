@@ -14,6 +14,7 @@ class TestSetDestBranch:
         m = chm_dest_feature['mirror']
         m._set_active_dest_branch(FEATURE_BRANCH)
         assert not Head.checkout.called
+        assert m.dest_head_commit is None
 
     def test_target_is_not_active(self, chm_dest_master, mocker):
         mocker.patch.object(Repo, 'heads')

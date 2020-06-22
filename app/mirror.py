@@ -42,8 +42,15 @@ class CommitHistoryMirror:
         self.dest_prefix = prefix
         self._init_source_repo()
 
-        # True if `dest_workdir` is given:
+        # True if `dest_workdir` is given,
+        # to be set in _set_active_dest_branch() method
         self.prior_dest_exists = False
+
+        # The current head of the active branch,
+        # will only be not None when the dest repo 
+        # has valid working tree head,
+        # Also to be set in _set_active_dest_branch() method
+        self.dest_head_commit = None
 
         if not dest_workdir:
             self._init_empty_dest_repo()
@@ -162,6 +169,7 @@ class CommitHistoryMirror:
             if self.prior_dest_exists:
                 dest_branch = dest_branch if dest_branch else source_branch
                 self._set_active_dest_branch(dest_branch)
+                self.dest_head_commit = self.dest_repo.head.commit
 
             # Set up git-rev-list-options
             options = clean_dict({
