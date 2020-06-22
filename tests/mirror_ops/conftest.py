@@ -7,7 +7,7 @@ Fixtures:
     dest_repo_master(non_git_repo)
     dest_repo_feature(dest_repo_master)
     chm_dest_master(dest_repo_master, init_source_repo)
-    chm_dest_mfeature(dest_repo_feature, init_source_repo)
+    chm_dest_feature(dest_repo_feature, init_source_repo)
 """
 import os
 
@@ -74,7 +74,9 @@ def dest_repo_master(non_git_repo):
 def dest_repo_feature(dest_repo_master):
     """Checks out FEATURE_BRANCH branch in non empty git repo."""
     repo = dest_repo_master
-    repo.heads.master.checkout(FEATURE_BRANCH)
+    for branch in repo.branches:
+        if branch.name == FEATURE_BRANCH:
+            branch.checkout()
     yield repo
     repo.heads.master.checkout()
 
@@ -92,7 +94,7 @@ def chm_dest_master(dest_repo_master, init_source_repo):
 
 
 @pytest.fixture
-def chm_dest_mfeature(dest_repo_feature, init_source_repo):
+def chm_dest_feature(dest_repo_feature, init_source_repo):
     """CHM session with branch feature checked out in dest repo."""
     dest_repo = dest_repo_feature
     source_repo_path, _, _ = init_source_repo
