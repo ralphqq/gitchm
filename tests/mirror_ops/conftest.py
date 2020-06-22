@@ -4,15 +4,22 @@ Fixtures used to test mirror ops
 Fixtures:
     chm(init_source_repo)
     iter_commits(chm)
-    init_dest_repo(chm)
+    dest_repo_master(non_git_repo)
+    dest_repo_feature(dest_repo_master)
+    chm_dest_master(dest_repo_master, init_source_repo)
+    chm_dest_mfeature(dest_repo_feature, init_source_repo)
 """
+import os
+
+from git import Repo
 import pytest
 
 from app.mirror import CommitHistoryMirror
 from app.utils import delete_dir
+from tests.utils import FEATURE_BRANCH
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture
 def chm(init_source_repo):
     """Initializes CommitHistoryMirror session."""
     source_repo_path, parent_dir_path, commit_data = init_source_repo
@@ -36,17 +43,61 @@ def iter_commits(chm):
 
 
 @pytest.fixture
-def init_dest_repo(chm):
-    """Ensures that dest repo's branches get torn down."""
-    m = chm['mirror']
-    repo = m.dest_repo
-    yield chm
+def dest_repo_master(non_git_repo):
+    """Creates a non empty git repo."""
+    repo = Repo.init(non_git_repo)
 
-    # Make sure master branch is checked out
+    # Create and commit a dummy file
+    dummy_file = 'dummy.txt'
+    dummy_file_path = os.path.join(repo.working_dir, dummy_file)
+    with open(dummy_file_path, 'w') as f:
+        f.write('Mundus vult decipi, ergo decipiatur.')
+    repo.index.add(dummy_file_path)
+    repo.index.commit('Add new file')
+
+    # Create new branch (but do not check out)
+    repo.create_head(FEATURE_BRANCH)
+
+    yield repo
+
+    # Make sure to check out master before deleting other branches
     if repo.active_branch.name != 'master':
         repo.heads.master.checkout()
 
-    for branch in m.dest_repo.branches:
-        if branch.name != 'master':
-            # Delete all branches except master
+    # Delete branches except 'master' and FEATURE_BRANCH
+    for branch in repo.branches:
+        if branch.name not in ['master', FEATURE_BRANCH]:
             repo.delete_head(branch)
+
+
+@pytest.fixture
+def dest_repo_feature(dest_repo_master):
+    """Checks out FEATURE_BRANCH branch in non empty git repo."""
+    repo = dest_repo_master
+    repo.heads.master.checkout(FEATURE_BRANCH)
+    yield repo
+    repo.heads.master.checkout()
+
+
+@pytest.fixture
+def chm_dest_master(dest_repo_master, init_source_repo):
+    """CHM session with master checked out in dest repo."""
+    dest_repo = dest_repo_master
+    source_repo_path, _, _ = init_source_repo
+    mirror = CommitHistoryMirror(
+        source_workdir=source_repo_path,
+        dest_workdir=dest_repo.working_dir
+    )
+    return {'mirror': mirror}
+
+
+@pytest.fixture
+def chm_dest_mfeature(dest_repo_feature, init_source_repo):
+    """CHM session with branch feature checked out in dest repo."""
+    dest_repo = dest_repo_feature
+    source_repo_path, _, _ = init_source_repo
+    mirror = CommitHistoryMirror(
+        source_workdir=source_repo_path,
+        dest_workdir=dest_repo.working_dir
+    )
+    return {'mirror': mirror}

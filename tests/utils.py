@@ -1,6 +1,12 @@
 """
 Some helper functions and classes used throughout the test suite
 
+Constants:
+    TEST_DIR
+    COMMIT_DATAFILE
+    DEST_REPO_PREFIX
+    FEATURE_BRANCH
+
 Helper functions:
     make_commits(exclude_n_commits: int = 0) -> list:
 
@@ -16,9 +22,12 @@ from git import Actor, Repo
 from app.mirror import CommitHistoryMirror
 
 
+# Constants
+
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 COMMIT_DATAFILE = os.path.join(TEST_DIR, 'data/commits.json')
 DEST_REPO_PREFIX = 'mirror'
+FEATURE_BRANCH = 'feature'
 
 
 # Helper functions

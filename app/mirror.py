@@ -138,8 +138,22 @@ class CommitHistoryMirror:
             dest_branch (str: The branch in the destination repo where 
                 the fetched commits will be replicated in; if not 
                 provided, this will be set to the same branch as 
-                `source_branch`
+                `source_branch`; but this can only be set if the 
+                destination repo has an identifiable working tree head
+
+            Raises:
+                ValueError: if `dest_branch` is specified in a 
+                    destination repo which does not have any working 
+                    tree heads
         """
+        if not self.prior_dest_exists and dest_branch:
+            # Cannot set active branch in a destination repo
+            #  which does not have any working tree heads
+            raise ValueError(
+                f'Destination repo currently does not have a '
+                'working tree head; cannot set target branch'
+            )
+
         logger.debug('Preparing to replicate commits')
 
         try:
