@@ -1,3 +1,11 @@
+"""
+Fixtures used throughout the test suite
+
+Fixtures:
+    init_chm_test_session()
+    init_source_repo(init_chm_test_session)
+    non_git_repo(init_source_repo)
+"""
 import os
 import tempfile
 

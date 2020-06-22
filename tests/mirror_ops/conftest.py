@@ -1,3 +1,11 @@
+"""
+Fixtures used to test mirror ops
+
+Fixtures:
+    chm(init_source_repo)
+    iter_commits(chm)
+    init_dest_repo(chm)
+"""
 import pytest
 
 from app.mirror import CommitHistoryMirror
