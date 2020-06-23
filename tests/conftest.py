@@ -105,13 +105,14 @@ def dest_repo_master(non_git_repo):
     """Creates a non empty git repo."""
     repo = Repo.init(non_git_repo)
 
-    # Create and commit a dummy file
-    dummy_file = 'dummy.txt'
-    dummy_file_path = os.path.join(repo.working_dir, dummy_file)
-    with open(dummy_file_path, 'w') as f:
-        f.write('Mundus vult decipi, ergo decipiatur.')
-    repo.index.add(dummy_file_path)
-    repo.index.commit('Add new file')
+    # Create and commit some dummy files
+    # and make entries to .gitchmirror
+    commits_data = load_commit_data()
+    make_commits(
+        repo=repo,
+        commits_data=commits_data[:2],  # First 2 commits only
+        has_mirror=True
+    )
 
     # Create new branch (but do not check out)
     repo.create_head(FEATURE_BRANCH)
@@ -136,13 +137,14 @@ def dest_repo_feature(dest_repo_master):
         if branch.name == FEATURE_BRANCH:
             branch.checkout()
 
-    # Add new file and commit changes
-    new_file = 'newfile.txt'
-    new_file_path = os.path.join(repo.working_dir, new_file)
-    with open(new_file_path, 'w') as f:
-        f.write('The quick brown fox')
-    repo.index.add(new_file_path)
-    repo.index.commit('New file in feature')
+    # Create and commit some dummy files
+    # and make entries to .gitchmirror
+    commits_data = load_commit_data()
+    make_commits(
+        repo=repo,
+        commits_data=commits_data[2:4],  # Commits 3 and 4
+        has_mirror=True
+    )
 
     yield repo
     repo.heads.master.checkout()
