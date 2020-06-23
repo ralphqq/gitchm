@@ -5,8 +5,10 @@ Fixtures:
     init_chm_test_session()
     init_source_repo(init_chm_test_session)
     non_git_repo(init_source_repo)
-    dest_repo_master(non_git_repo)
-    dest_repo_feature(dest_repo_master)
+    dest_repo_no_tree(non_git_repo)
+    dest_repo_tree(dest_repo_no_tree)
+    dest_repo_mirror_master(non_git_repo)
+    dest_repo_mirror_feature(dest_repo_mirror_master)
 """
 import os
 import tempfile
@@ -101,8 +103,27 @@ def non_git_repo(init_source_repo):
 
 
 @pytest.fixture
-def dest_repo_master(non_git_repo):
-    """Creates a non empty git repo."""
+def dest_repo_no_tree(non_git_repo):
+    """Creates a git repo but without a working tree head."""
+    repo = Repo.init(non_git_repo)
+    yield repo
+
+
+@pytest.fixture
+def dest_repo_tree(dest_repo_no_tree):
+    """Creates repo with working tree head at branch master."""
+    repo = dest_repo_no_tree
+    commits_data = load_commit_data()
+    make_commits(
+        repo=repo,
+        commits_data=commits_data[:2]   # Frist 2 commits
+    )
+    yield repo
+
+
+@pytest.fixture
+def dest_repo_mirror_master(non_git_repo):
+    """Creates a mirror repo with commits in master."""
     repo = Repo.init(non_git_repo)
 
     # Create and commit some dummy files
@@ -130,9 +151,9 @@ def dest_repo_master(non_git_repo):
 
 
 @pytest.fixture
-def dest_repo_feature(dest_repo_master):
-    """Checks out FEATURE_BRANCH branch in non empty git repo."""
-    repo = dest_repo_master
+def dest_repo_mirror_feature(dest_repo_mirror_master):
+    """Extends dest_repo_mirror_master by making commits in FEATURE_BRANCH."""
+    repo = dest_repo_mirror_master
     for branch in repo.branches:
         if branch.name == FEATURE_BRANCH:
             branch.checkout()

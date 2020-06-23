@@ -15,6 +15,8 @@ from app.utils import (
 
 logger = logging.getLogger(__name__)
 
+GITCHMFILE = '.gitchmirror'
+
 
 class CommitHistoryMirror:
     """Represents commit history mirroring session."""
@@ -42,17 +44,18 @@ class CommitHistoryMirror:
         self.dest_prefix = prefix
         self._init_source_repo()
 
-        # True if `dest_workdir` is given,
-        # to be set in _set_active_dest_branch() method
+        # True if `dest_workdir` points to existing repo
         self.prior_dest_exists = False
 
-        # The current head and list of commits in  the active
-        # branch of the dest repo,
-        # will only be not None when the dest repo 
-        # has valid working tree head,
-        # Also to be set in _set_active_dest_branch() method
+        # The current head in the active dest repo branch
         self.dest_head_commit = None
+
+        # list of commit hashes reflected in  the active dest branch
+        # non-empty only if dest is a mirror repo
         self.dest_commit_hashes = []
+
+        # Indicates whether dest repo is a mirror repo or not
+        self.dest_is_mirror = False
 
         if not dest_workdir:
             self._init_empty_dest_repo()
@@ -111,7 +114,9 @@ class CommitHistoryMirror:
             # Try if the path points to a valid git repo
             self.dest_repo = Repo(dest_workdir)
             logger.debug(f'Directory {dest_workdir} is a valid git repo.')
+
             self.prior_dest_exists = True
+            self._check_if_dest_is_mirror()
 
         except InvalidGitRepositoryError:
             # Initialize dir as git repo
@@ -123,6 +128,21 @@ class CommitHistoryMirror:
         logger.info(
             f'Initialized existing destination repo {self.dest_workdir}'
         )
+
+    def _check_if_dest_is_mirror(self) -> bool:
+        """Checks if dest repo is a mirror repo.
+
+    A mirror repo is a git repo that has both:
+    1. A working tree head
+    2. The file `.gitchmirror` saved in the working directory
+        """
+        logger.debug('Checking if destination is a mirror repo')
+        fpath = os.path.join(self.dest_repo.working_dir, GITCHMFILE)
+        if self.prior_dest_exists and os.path.exists(fpath):
+            logger.info('Identified destination as a mirror repo')
+            self.dest_is_mirror = True
+        else:
+            logger.info('Destination is not a mirror repo')
 
     async def reflect(
             self,

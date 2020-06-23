@@ -4,8 +4,8 @@ Fixtures used to test mirror ops
 Fixtures:
     chm(init_source_repo)
     iter_commits(chm)
-    chm_dest_master(dest_repo_master, init_source_repo)
-    chm_dest_feature(dest_repo_feature, init_source_repo)
+    chm_dest_master(dest_repo_mirror_master, init_source_repo)
+    chm_dest_feature(dest_repo_mirror_feature, init_source_repo)
 """
 import os
 
@@ -40,9 +40,9 @@ def iter_commits(chm):
 
 
 @pytest.fixture
-def chm_dest_master(dest_repo_master, init_source_repo):
+def chm_dest_master(dest_repo_mirror_master, init_source_repo):
     """CHM session with master checked out in dest repo."""
-    dest_repo = dest_repo_master
+    dest_repo = dest_repo_mirror_master
     source_repo_path, _, _ = init_source_repo
     mirror = CommitHistoryMirror(
         source_workdir=source_repo_path,
@@ -52,9 +52,9 @@ def chm_dest_master(dest_repo_master, init_source_repo):
 
 
 @pytest.fixture
-def chm_dest_feature(dest_repo_feature, init_source_repo):
+def chm_dest_feature(dest_repo_mirror_feature, init_source_repo):
     """CHM session with branch feature checked out in dest repo."""
-    dest_repo = dest_repo_feature
+    dest_repo = dest_repo_mirror_feature
     source_repo_path, _, _ = init_source_repo
     mirror = CommitHistoryMirror(
         source_workdir=source_repo_path,
