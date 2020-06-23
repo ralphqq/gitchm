@@ -1,8 +1,56 @@
 [
-  {"committer_name": "Jimmy Page", "committer_email": "jimmy.page@gmail.com", "author_name": "Jimmy Page", "author_email": "jimmy.page@gmail.com", "message": "Initial commit", "timestamp": 1545730073},
-  {"committer_name": "Robert Plant", "committer_email": "robert.plant@gmail.com", "author_name": "Robert Plant", "author_email": "robert.plant@gmail.com", "message": "Install dependencies", "timestamp": 1588719285},
-  {"committer_name": "Robert Plant", "committer_email": "robert.plant@gmail.com", "author_name": "Robert Plant", "author_email": "robert.plant@gmail.com", "message": "Fix bug 1", "timestamp": 1589969082},
-  {"committer_name": "Jimmy Page", "committer_email": "jimmy.page@gmail.com", "author_name": "Jimmy Page", "author_email": "jimmy.page@gmail.com", "message": "Add feature 1", "timestamp": 1590927386},
-  {"committer_name": "John Bonham", "committer_email": "john.bonham@gmail.com", "author_name": "John Bonham", "author_email": "john.bonham@gmail.com", "message": "Modify API docs", "timestamp": 1591798441},
-  {"committer_name": "John Bonham", "committer_email": "john.bonham@gmail.com", "author_name": "Jimmy Page", "author_email": "jimmy.page@gmail.com", "message": "Merge PR", "timestamp": 1592207090}
+  {
+    "committer_name": "Jimmy Page",
+    "committer_email": "jimmy.page@gmail.com",
+    "author_name": "Jimmy Page",
+    "author_email": "jimmy.page@gmail.com",
+    "message": "Initial commit",
+    "timestamp": 1545730073,
+    "hexsha": "a40633550bc520f9f4a0d674a74d825b79fbc906"
+  },
+  {
+    "committer_name": "Robert Plant",
+    "committer_email": "robert.plant@gmail.com",
+    "author_name": "Robert Plant",
+    "author_email": "robert.plant@gmail.com",
+    "message": "Install dependencies",
+    "timestamp": 1588719285,
+    "hexsha": "5ee1105791e5b75dc48e88a09f94169cc0df9453"
+  },
+  {
+    "committer_name": "Robert Plant",
+    "committer_email": "robert.plant@gmail.com",
+    "author_name": "Robert Plant",
+    "author_email": "robert.plant@gmail.com",
+    "message": "Fix bug 1",
+    "timestamp": 1589969082,
+    "hexsha": "ee4dc18a4fc0a01816c78918eceaddcf73c39316"
+  },
+  {
+    "committer_name": "Jimmy Page",
+    "committer_email": "jimmy.page@gmail.com",
+    "author_name": "Jimmy Page",
+    "author_email": "jimmy.page@gmail.com",
+    "message": "Add feature 1",
+    "timestamp": 1590927386,
+    "hexsha": "e28a763841e1f5b4e9467fbcdabd791d628da626"
+  },
+  {
+    "committer_name": "John Bonham",
+    "committer_email": "john.bonham@gmail.com",
+    "author_name": "John Bonham",
+    "author_email": "john.bonham@gmail.com",
+    "message": "Modify API docs",
+    "timestamp": 1591798441,
+    "hexsha": "fd6f9834ec327fe1795eee9205f3e69defa6e487"
+  },
+  {
+    "committer_name": "John Bonham",
+    "committer_email": "john.bonham@gmail.com",
+    "author_name": "Jimmy Page",
+    "author_email": "jimmy.page@gmail.com",
+    "message": "Merge PR",
+    "timestamp": 1592207090,
+    "hexsha": "2a1baf08b9518e83b12cef5d9d5a43c0cdadb25e"
+  }
 ]
