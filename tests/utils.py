@@ -126,3 +126,7 @@ class ModifiedCHM(CommitHistoryMirror):
         self.dest_workdir = dest_workdir
         self.dest_prefix = prefix
         self.prior_dest_exists = False
+        self.dest_head_commit = None
+        self.dest_has_tree = False
+        self.dest_commit_hashes = []
+        self.dest_is_mirror = False
