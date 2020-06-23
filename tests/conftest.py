@@ -15,7 +15,11 @@ from git import Repo
 import pytest
 
 from app.utils import create_dir, delete_dir
-from tests.utils import FEATURE_BRANCH, make_commits
+from tests.utils import (
+    FEATURE_BRANCH,
+    load_commit_data,
+    make_commits,
+)
 
 
 PARENT_DIR = 'chm-test-session'
@@ -61,7 +65,10 @@ def init_source_repo(init_chm_test_session):
     repo = Repo.init(source_workdir_path)
 
     # Make the commits
-    commits = make_commits(repo)
+    commits = make_commits(
+        repo=repo,
+        commits_data=load_commit_data()
+    )
 
     yield (
         source_workdir_path,

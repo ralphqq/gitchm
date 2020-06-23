@@ -8,7 +8,8 @@ Constants:
     FEATURE_BRANCH
 
 Helper functions:
-    make_commits(exclude_n_commits: int = 0) -> list:
+    load_commit_data()
+    make_commits(repo, commits_data):
 
 Helper Classes:
     ModifiedCHM
@@ -32,16 +33,8 @@ FEATURE_BRANCH = 'feature'
 
 # Helper functions
 
-def make_commits(repo: Repo, exclude_commits: int = 0) -> list:
-    """Loads commit data from JSON file and makes commits in given repo.
-
-    Args:
-        repo (`Repo`): git repo instance where commits will be made
-        exclude_commits (int): number of latest commits to exclude
-
-    Returns:
-        list: list of dicts representing commits made
-    """
+def load_commit_data() -> list:
+    """Loads dummy commits data from JSON file."""
     commits_fetched = []
 
     # Load data for creating dummy commits
@@ -49,12 +42,23 @@ def make_commits(repo: Repo, exclude_commits: int = 0) -> list:
         commits_fetched = json.load(f)
 
     # Sort in chronological order
-    # and slice list based on excluded commits
     commits_fetched = sorted(commits_fetched, key=lambda x: x['timestamp'])
-    commits_made = commits_fetched[:len(commits_fetched) - exclude_commits]
 
+    return commits_fetched
+
+
+def make_commits(repo: Repo, commits_data: list) -> list:
+    """Loads commit data from JSON file and makes commits in given repo.
+
+    Args:
+        repo (`Repo`): git repo instance where commits will be made
+        commits_data (list): Contains the commit details to write
+
+    Returns:
+        list: list of dicts representing commits made
+    """
     # Simulate git add-commit workflow for each commit item
-    for i, commit_item in enumerate(commits_made):
+    for i, commit_item in enumerate(commits_data):
         message = commit_item['message']
         commit_dt = datetime.fromtimestamp(commit_item['timestamp']).isoformat()
 
@@ -85,7 +89,7 @@ def make_commits(repo: Repo, exclude_commits: int = 0) -> list:
             commit_date=commit_dt
         )
 
-    return commits_made
+    return commits_data
 
 
 # Helper classes
