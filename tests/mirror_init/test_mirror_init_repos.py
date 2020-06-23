@@ -16,23 +16,10 @@ class TestSourceAndDestinationRepoInit:
     @pytest.fixture
     def mocked_calls(self, mocker):
         mocker.patch.object(Repo, 'init')
-        mocker.patch.object(CommitHistoryMirror, '_check_if_dest_is_mirror')
-
-    @pytest.fixture
-    def modified_chm(self, init_source_repo):
-        """Creates an instance of a ModifiedCHM object."""
-        source_workdir, parent_dir_path, commit_data = init_source_repo
-        mirror = ModifiedCHM(source_workdir)
-        return {
-            'mirror': mirror,
-            'source_workdir': source_workdir,
-            'parent_dir': parent_dir_path,
-            'commits': commit_data,
-        }
+        mocker.patch.object(CommitHistoryMirror, '_check_dest_tree_and_mirror')
 
     def test_source_repo_init(self, modified_chm):
         mirror = modified_chm['mirror']
-        mirror._init_source_repo()
         all_commits = list(mirror.source_repo.iter_commits('master'))
         source_repo_name = os.path.split(modified_chm['source_workdir'])[-1]
 
@@ -41,15 +28,13 @@ class TestSourceAndDestinationRepoInit:
         assert mirror.source_repo_name == source_repo_name
         assert mirror.parent_dir == modified_chm['parent_dir']
 
-    def test_source_repo_init_on_non_git(self, modified_chm, non_git_repo):
-        mirror = modified_chm['mirror']
-        mirror.source_workdir = non_git_repo
+    def test_source_repo_init_on_non_git(self, non_git_repo):
+        mirror = ModifiedCHM(non_git_repo)
         with pytest.raises(GitError):
             mirror._init_source_repo()
 
     def test_empty_dest_repo_init(self, modified_chm):
         mirror = modified_chm['mirror']
-        mirror._init_source_repo()
         mirror._init_empty_dest_repo()
 
         source_repo_name = os.path.split(modified_chm['source_workdir'])[-1]
@@ -70,11 +55,10 @@ class TestSourceAndDestinationRepoInit:
             mocked_calls
         ):
         mirror = modified_chm['mirror']
-        mirror._init_source_repo()
         mirror._init_existing_dest_repo(non_git_repo)
 
         assert Repo.init.called_once_with(non_git_repo)
-        assert not mirror._check_if_dest_is_mirror.called
+        assert not mirror._check_dest_tree_and_mirror.called
         assert mirror.dest_workdir == non_git_repo
         assert not mirror.prior_dest_exists
 
@@ -86,11 +70,10 @@ class TestSourceAndDestinationRepoInit:
         ):
         working_dir = dest_repo_no_tree.working_dir
         mirror = modified_chm['mirror']
-        mirror._init_source_repo()
         mirror._init_existing_dest_repo(working_dir)
 
         assert not Repo.init.called
-        assert mirror._check_if_dest_is_mirror.called
+        assert mirror._check_dest_tree_and_mirror.called
         assert mirror.dest_workdir == working_dir
         assert mirror.prior_dest_exists
 
@@ -102,10 +85,9 @@ class TestSourceAndDestinationRepoInit:
         ):
         working_dir = dest_repo_tree.working_dir
         mirror = modified_chm['mirror']
-        mirror._init_source_repo()
         mirror._init_existing_dest_repo(working_dir)
 
         assert not Repo.init.called
-        assert mirror._check_if_dest_is_mirror.called
+        assert mirror._check_dest_tree_and_mirror.called
         assert mirror.dest_workdir == working_dir
         assert mirror.prior_dest_exists
