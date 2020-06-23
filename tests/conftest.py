@@ -5,6 +5,8 @@ Fixtures:
     init_chm_test_session()
     init_source_repo(init_chm_test_session)
     non_git_repo(init_source_repo)
+    dest_repo_master(non_git_repo)
+    dest_repo_feature(dest_repo_master)
 """
 import os
 import tempfile
@@ -13,7 +15,7 @@ from git import Repo
 import pytest
 
 from app.utils import create_dir, delete_dir
-from tests.utils import make_commits
+from tests.utils import FEATURE_BRANCH, make_commits
 
 
 PARENT_DIR = 'chm-test-session'
@@ -89,3 +91,51 @@ def non_git_repo(init_source_repo):
 
     # Delete the non-git repo
     delete_dir(non_git_dir_path)
+
+
+@pytest.fixture
+def dest_repo_master(non_git_repo):
+    """Creates a non empty git repo."""
+    repo = Repo.init(non_git_repo)
+
+    # Create and commit a dummy file
+    dummy_file = 'dummy.txt'
+    dummy_file_path = os.path.join(repo.working_dir, dummy_file)
+    with open(dummy_file_path, 'w') as f:
+        f.write('Mundus vult decipi, ergo decipiatur.')
+    repo.index.add(dummy_file_path)
+    repo.index.commit('Add new file')
+
+    # Create new branch (but do not check out)
+    repo.create_head(FEATURE_BRANCH)
+
+    yield repo
+
+    # Make sure to check out master before deleting other branches
+    if repo.active_branch.name != 'master':
+        repo.heads.master.checkout()
+
+    # Delete branches except 'master' and FEATURE_BRANCH
+    for branch in repo.branches:
+        if branch.name not in ['master', FEATURE_BRANCH]:
+            repo.delete_head(branch)
+
+
+@pytest.fixture
+def dest_repo_feature(dest_repo_master):
+    """Checks out FEATURE_BRANCH branch in non empty git repo."""
+    repo = dest_repo_master
+    for branch in repo.branches:
+        if branch.name == FEATURE_BRANCH:
+            branch.checkout()
+
+    # Add new file and commit changes
+    new_file = 'newfile.txt'
+    new_file_path = os.path.join(repo.working_dir, new_file)
+    with open(new_file_path, 'w') as f:
+        f.write('The quick brown fox')
+    repo.index.add(new_file_path)
+    repo.index.commit('New file in feature')
+
+    yield repo
+    repo.heads.master.checkout()

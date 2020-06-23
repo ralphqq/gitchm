@@ -4,8 +4,6 @@ Fixtures used to test mirror ops
 Fixtures:
     chm(init_source_repo)
     iter_commits(chm)
-    dest_repo_master(non_git_repo)
-    dest_repo_feature(dest_repo_master)
     chm_dest_master(dest_repo_master, init_source_repo)
     chm_dest_feature(dest_repo_feature, init_source_repo)
 """
@@ -16,7 +14,6 @@ import pytest
 
 from app.mirror import CommitHistoryMirror
 from app.utils import delete_dir
-from tests.utils import FEATURE_BRANCH
 
 
 @pytest.fixture
@@ -40,54 +37,6 @@ def iter_commits(chm):
     """Returns a generator of Commit objects."""
     m = chm['mirror']
     return m.source_repo.iter_commits('master')
-
-
-@pytest.fixture
-def dest_repo_master(non_git_repo):
-    """Creates a non empty git repo."""
-    repo = Repo.init(non_git_repo)
-
-    # Create and commit a dummy file
-    dummy_file = 'dummy.txt'
-    dummy_file_path = os.path.join(repo.working_dir, dummy_file)
-    with open(dummy_file_path, 'w') as f:
-        f.write('Mundus vult decipi, ergo decipiatur.')
-    repo.index.add(dummy_file_path)
-    repo.index.commit('Add new file')
-
-    # Create new branch (but do not check out)
-    repo.create_head(FEATURE_BRANCH)
-
-    yield repo
-
-    # Make sure to check out master before deleting other branches
-    if repo.active_branch.name != 'master':
-        repo.heads.master.checkout()
-
-    # Delete branches except 'master' and FEATURE_BRANCH
-    for branch in repo.branches:
-        if branch.name not in ['master', FEATURE_BRANCH]:
-            repo.delete_head(branch)
-
-
-@pytest.fixture
-def dest_repo_feature(dest_repo_master):
-    """Checks out FEATURE_BRANCH branch in non empty git repo."""
-    repo = dest_repo_master
-    for branch in repo.branches:
-        if branch.name == FEATURE_BRANCH:
-            branch.checkout()
-
-    # Add new file and commit changes
-    new_file = 'newfile.txt'
-    new_file_path = os.path.join(repo.working_dir, new_file)
-    with open(new_file_path, 'w') as f:
-        f.write('The quick brown fox')
-    repo.index.add(new_file_path)
-    repo.index.commit('New file in feature')
-
-    yield repo
-    repo.heads.master.checkout()
 
 
 @pytest.fixture
