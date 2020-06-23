@@ -20,7 +20,7 @@ import os
 
 from git import Actor, Repo
 
-from app.mirror import CommitHistoryMirror
+from app.mirror import CommitHistoryMirror, GITCHMFILE
 
 
 # Constants
@@ -47,18 +47,25 @@ def load_commit_data() -> list:
     return commits_fetched
 
 
-def make_commits(repo: Repo, commits_data: list) -> list:
+def make_commits(
+        repo: Repo,
+        commits_data: list,
+        has_mirror: bool = False
+    ) -> list:
     """Loads commit data from JSON file and makes commits in given repo.
 
     Args:
         repo (`Repo`): git repo instance where commits will be made
         commits_data (list): Contains the commit details to write
+        has_mirror (bool): Indicates whether to write to `.gitchmirror`
 
     Returns:
         list: list of dicts representing commits made
     """
     # Simulate git add-commit workflow for each commit item
     for i, commit_item in enumerate(commits_data):
+        changes = []
+        hexsha = commit_item['hexsha']
         message = commit_item['message']
         commit_dt = datetime.fromtimestamp(commit_item['timestamp']).isoformat()
 
@@ -68,6 +75,14 @@ def make_commits(repo: Repo, commits_data: list) -> list:
         with open(fpath, 'w', encoding='utf-8') as f:
             # Write commit message as file content
             f.write(message)
+        changes.append(fpath)
+
+        # Write to .gitchmirror file
+        if has_mirror:
+            gpath = os.path.join(repo.working_dir, GITCHMFILE)
+            with open(gpath, 'a+', encoding='utf-8') as g:
+                g.write(f'{hexsha}\n')
+            changes.append(gpath)
 
         # Create author and committer
         author = Actor(
@@ -79,8 +94,8 @@ def make_commits(repo: Repo, commits_data: list) -> list:
             email=commit_item['committer_email']
         )
 
-        # Stage and commit the created file
-        repo.index.add([fpath])
+        # Stage and commit the created file(s)
+        repo.index.add(changes)
         repo.index.commit(
             message=message,
             author=author,
