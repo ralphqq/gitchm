@@ -4,7 +4,7 @@ Fixtures used to test mirror ops
 Fixtures:
     chm(init_source_repo)
     iter_commits(chm)
-    def chm_dest_tree(dest_repo_tree, init_source_repo):
+    chm_dest_tree(dest_repo_tree, init_source_repo)
     chm_dest_master(dest_repo_mirror_master, init_source_repo)
     chm_dest_feature(dest_repo_mirror_feature, init_source_repo)
 """

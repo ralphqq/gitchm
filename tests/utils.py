@@ -6,6 +6,8 @@ Constants:
     COMMIT_DATAFILE
     DEST_REPO_PREFIX
     FEATURE_BRANCH
+    DEST_MASTER_COMMITS
+    DEST_FEATURE_COMMITS
 
 Helper functions:
     load_commit_data()
@@ -29,6 +31,8 @@ TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 COMMIT_DATAFILE = os.path.join(TEST_DIR, 'data/commits.json')
 DEST_REPO_PREFIX = 'mirror'
 FEATURE_BRANCH = 'feature'
+DEST_MASTER_COMMITS = 2     # no. of dummy commits in dest master
+DEST_FEATURE_COMMITS = 4        # no. of dummy commits in dest feature
 
 
 # Helper functions

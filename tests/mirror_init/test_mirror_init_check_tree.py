@@ -1,7 +1,7 @@
 import pytest
 
 
-class TestCheckTreeAndMirror:
+class TestCheckTreeState:
 
     @pytest.fixture
     def mirror(self, modified_chm):

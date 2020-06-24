@@ -18,6 +18,8 @@ import pytest
 
 from app.utils import create_dir, delete_dir
 from tests.utils import (
+    DEST_FEATURE_COMMITS,
+    DEST_MASTER_COMMITS,
     FEATURE_BRANCH,
     load_commit_data,
     make_commits,
@@ -116,7 +118,7 @@ def dest_repo_tree(dest_repo_no_tree):
     commits_data = load_commit_data()
     make_commits(
         repo=repo,
-        commits_data=commits_data[:2]   # Frist 2 commits
+        commits_data=commits_data[:DEST_MASTER_COMMITS]   # 1st 2 commits
     )
     yield repo
 
@@ -126,12 +128,11 @@ def dest_repo_mirror_master(non_git_repo):
     """Creates a mirror repo with commits in master."""
     repo = Repo.init(non_git_repo)
 
-    # Create and commit some dummy files
-    # and make entries to .gitchmirror
+    # Reflect commits #1 and #2 into master
     commits_data = load_commit_data()
     make_commits(
         repo=repo,
-        commits_data=commits_data[:2],  # First 2 commits only
+        commits_data=commits_data[:DEST_MASTER_COMMITS],
         has_mirror=True
     )
 
@@ -158,12 +159,11 @@ def dest_repo_mirror_feature(dest_repo_mirror_master):
         if branch.name == FEATURE_BRANCH:
             branch.checkout()
 
-    # Create and commit some dummy files
-    # and make entries to .gitchmirror
+    # Reflect commits #3 and #4 to feature
     commits_data = load_commit_data()
     make_commits(
         repo=repo,
-        commits_data=commits_data[2:4],  # Commits 3 and 4
+        commits_data=commits_data[DEST_MASTER_COMMITS:DEST_FEATURE_COMMITS],
         has_mirror=True
     )
 

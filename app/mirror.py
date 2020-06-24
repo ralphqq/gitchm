@@ -306,12 +306,19 @@ class CommitHistoryMirror:
         return commits
 
     def _check_mirror_state(self):
-        """Reads contents of `.gitchmirror` file if available."""
+        """Reads contents of `.gitchmirror` file if available.
+
+        Raises:
+            ValueError: if destination repo has no working tree
+        """
+        if not self.dest_has_tree:
+            raise ValueError('Destination has no working tree')
+
         logger.debug(f'Checking mirror status of destination repo')
         fpath = os.path.join(self.dest_repo.working_dir, GITCHMFILE)
-        
+
         if os.path.exists(fpath):
-            logger.dest_is_mirror = True
+            self.dest_is_mirror = True
             logger.info('Detected destination is a mirror repo')
 
             with open(fpath, 'r', encoding='utf-8') as f:
@@ -321,3 +328,6 @@ class CommitHistoryMirror:
                 f'Found {len(self.dest_commit_hashes)} '
                 f'mirrored commits in destination'
             )
+
+        else:
+            logger.info('Destination is not a mirror repo yet')
