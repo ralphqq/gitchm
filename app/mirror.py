@@ -119,7 +119,7 @@ class CommitHistoryMirror:
             logger.debug(f'Directory {dest_workdir} is a valid git repo.')
 
             self.prior_dest_exists = True
-            self._check_dest_tree_and_mirror()
+            self._check_tree_state()
 
         except InvalidGitRepositoryError:
             # Initialize dir as git repo
@@ -132,31 +132,15 @@ class CommitHistoryMirror:
             f'Initialized existing destination repo {self.dest_workdir}'
         )
 
-    def _check_dest_tree_and_mirror(self):
-        """Checks if dest repo has working tree and is a mirror repo.
-
-    A mirror repo is a git repo that has both:
-    1. A working tree head
-    2. The file `.gitchmirror` saved in the working directory
-        """
-        logger.debug(
-            'Checking if destination has working '
-            'tree head and is a mirror repo'
-        )
+    def _check_tree_state(self):
+        """Determines if destination repo has working tree head."""
+        logger.debug('Checking if destination has working tree head')
 
         if self.dest_repo.heads:
             logger.info('Detected working tree head in destination')
             self.dest_has_tree = True
-
-            fpath = os.path.join(self.dest_repo.working_dir, GITCHMFILE)
-            if os.path.exists(fpath):
-                logger.info('Identified destination as a mirror repo')
-                self.dest_is_mirror = True
-
         else:
-            logger.info(
-                'Destination has no working tree and is not a mirror repo'
-            )
+            logger.info('Destination has no working tree')
 
     async def reflect(
             self,
@@ -191,7 +175,7 @@ class CommitHistoryMirror:
                     destination repo which does not have any working 
                     tree heads
         """
-        if not self.prior_dest_exists and dest_branch:
+        if not self.dest_has_tree and dest_branch:
             # Cannot set active branch in a destination repo
             #  which does not have any working tree heads
             raise ValueError(
@@ -202,13 +186,15 @@ class CommitHistoryMirror:
         logger.debug('Preparing to replicate commits')
 
         try:
-            # Check if dest repo is new or prior repo
-            # Then set active branch in destination repo
-            if self.prior_dest_exists:
+            # Check if dest repo has tree head
+            if self.dest_has_tree:
+                    # Set active branch in dest repo
+                    # and get head commit
                 dest_branch = dest_branch if dest_branch else source_branch
                 self._set_active_dest_branch(dest_branch)
                 self.dest_head_commit = self.dest_repo.head.commit
-                self.dest_commit_hashes = self._get_commit_hashes(
+
+                self._check_mirror_state(
                     repo_name='dest',
                     branch=dest_branch
                 )
@@ -289,7 +275,7 @@ class CommitHistoryMirror:
         repo_name: str,
         branch: str = 'master'
     ) -> list:
-        """Returns list of commit hashes (hex SHA).
+        """Returns list of commit hashes (hex SHA) in branch.
 
         Args:
             repo_name (str): Can either be 'source' or 'dest'
@@ -318,3 +304,20 @@ class CommitHistoryMirror:
             f'branch {branch} of {repo.working_dir}'
         )
         return commits
+
+    def _check_mirror_state(self):
+        """Reads contents of `.gitchmirror` file if available."""
+        logger.debug(f'Checking mirror status of destination repo')
+        fpath = os.path.join(self.dest_repo.working_dir, GITCHMFILE)
+        
+        if os.path.exists(fpath):
+            logger.dest_is_mirror = True
+            logger.info('Detected destination is a mirror repo')
+
+            with open(fpath, 'r', encoding='utf-8') as f:
+                self.dest_commit_hashes = f.readlines()
+
+            logger.info(
+                f'Found {len(self.dest_commit_hashes)} '
+                f'mirrored commits in destination'
+            )

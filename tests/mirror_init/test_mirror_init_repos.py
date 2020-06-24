@@ -16,7 +16,7 @@ class TestSourceAndDestinationRepoInit:
     @pytest.fixture
     def mocked_calls(self, mocker):
         mocker.patch.object(Repo, 'init')
-        mocker.patch.object(CommitHistoryMirror, '_check_dest_tree_and_mirror')
+        mocker.patch.object(CommitHistoryMirror, '_check_tree_state')
 
     def test_source_repo_init(self, modified_chm):
         mirror = modified_chm['mirror']
@@ -58,7 +58,7 @@ class TestSourceAndDestinationRepoInit:
         mirror._init_existing_dest_repo(non_git_repo)
 
         assert Repo.init.called_once_with(non_git_repo)
-        assert not mirror._check_dest_tree_and_mirror.called
+        assert not mirror._check_tree_state.called
         assert mirror.dest_workdir == non_git_repo
         assert not mirror.prior_dest_exists
 
@@ -73,7 +73,7 @@ class TestSourceAndDestinationRepoInit:
         mirror._init_existing_dest_repo(working_dir)
 
         assert not Repo.init.called
-        assert mirror._check_dest_tree_and_mirror.called
+        assert mirror._check_tree_state.called
         assert mirror.dest_workdir == working_dir
         assert mirror.prior_dest_exists
 
@@ -88,6 +88,6 @@ class TestSourceAndDestinationRepoInit:
         mirror._init_existing_dest_repo(working_dir)
 
         assert not Repo.init.called
-        assert mirror._check_dest_tree_and_mirror.called
+        assert mirror._check_tree_state.called
         assert mirror.dest_workdir == working_dir
         assert mirror.prior_dest_exists
