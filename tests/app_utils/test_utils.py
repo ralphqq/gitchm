@@ -1,10 +1,24 @@
+"""
+Other utils tests
+
+Classes:
+    TestCreateDirectories
+    TestMiscUtils
+"""
 import os
 import re
 import shutil
 
+from git import Actor
 import pytest
 
-from app.utils import clean_dict, create_dir, delete_dir
+from app.exc import IncompleteCommitDetails
+from app.utils import (
+    clean_dict,
+    create_actor,
+    create_dir,
+    delete_dir
+)
 
 
 DUMMY_DIR = 'dummy-dir'
@@ -70,3 +84,21 @@ class TestMiscUtils:
         assert 'b' not in new_dict
         assert 'c' in new_dict
         assert 'd' in new_dict
+
+    @pytest.mark.parametrize(
+        'name,email',
+        [
+            ('Name', 'name@email.com'),
+            ('Name', ''),
+            ('', 'name@email.com'),
+            ('', ''),
+        ]
+    )
+    def test_create_actor(self, name, email):
+        if not name and not email:
+            with pytest.raises(IncompleteCommitDetails):
+                create_actor(name=name, email=email)
+
+        else:
+            actor = create_actor(name=name, email=email)
+            assert isinstance(actor, Actor)

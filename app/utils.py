@@ -8,6 +8,7 @@ Helper functions:
     create_dir(full_path)
     delete_dir(full_path)
     clean_dict(orig_dict)
+    create_actor(name, email)
 """
 from datetime import datetime
 import functools
@@ -15,7 +16,10 @@ import logging
 import os
 import shutil
 
+from git import Actor
 from git.exc import GitError
+
+from app.exc import IncompleteCommitDetails
 
 
 logger = logging.getLogger(__name__)
@@ -65,3 +69,16 @@ def delete_dir(full_path: str) -> None:
 def clean_dict(orig_dict: dict) -> dict:
     """Removes items with null values from dict."""
     return {k: v for k, v in orig_dict.items() if v is not None}
+
+
+def create_actor(name: str = '', email: str = '') -> Actor:
+    """Creates an instance of `Actor` class.
+
+    Raises:
+        IncompleteCommitDetails: if both `name` and `email` are empty
+    """
+    if not name and not email:
+        raise IncompleteCommitDetails(
+            'Cannot create author/committer: No name or email provided'
+        )
+    return Actor(name=name, email=email)

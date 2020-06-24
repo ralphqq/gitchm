@@ -2,11 +2,11 @@
 Sub-classed GitError exceptions
 
 Classes:
-    IncompleteGitDetailsException
+    IncompleteCommitDetails
 """
 from git.exc import GitError
 
 
-class IncompleteGitDetailsException(GitError):
+class IncompleteCommitDetails(GitError):
     """Raised when any crucial git commit detail is missing."""
     pass
