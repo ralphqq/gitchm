@@ -1,4 +1,5 @@
 import asyncio
+from collections import defaultdict
 import logging
 import os
 from typing import Generator, Union
@@ -16,7 +17,7 @@ from app.utils import (
 logger = logging.getLogger(__name__)
 
 GITCHMFILE = '.gitchmirror'
-
+SUMMARYFILE = 'summary.txt'
 
 class CommitHistoryMirror:
     """Represents commit history mirroring session."""
@@ -42,6 +43,8 @@ class CommitHistoryMirror:
         """
         self.source_workdir = source_workdir
         self.dest_prefix = prefix
+        self.stats = defaultdict(lambda: 0)
+
         self._init_source_repo()
 
         # True if `dest_workdir` points to existing repo
@@ -226,22 +229,72 @@ class CommitHistoryMirror:
             commits: Generator[Commit, None, None]
         ) -> None:
         """Wraps replication as async tasks and runs them in parallel."""
+        logger.debug('Preparing commit replication tasks')
         tasks = [
             self._commit(i, commit) for i, commit in enumerate(commits)
         ]
-        for coro in asyncio.as_completed(tasks):
-            result = await coro
+        task_count = len(tasks)
+        self.stats['found'] = task_count
+
+        if task_count:
+            logger.info(f'Found {task_count} commits to replicate')
+            for coro in asyncio.as_completed(tasks):
+                result = await coro
+                self.stats[result] += 1
+                self.stats['processed'] += 1
+
+            logger.info(
+                f"Processed {self.stats['processed']}/{task_count} commits"
+            )
+
+        else:
+            logger.info('No commits found that matched the provided options')
 
     async def _commit(self, n: int, commit_item: Commit) -> str:
         """Makes the commit into the destination repo.
 
         Returns:
             str: short text describing commit outcome, can be one of:
-                - 'ok'
+                - 'replicated'
                 - 'skipped'
-                - 'error'
+                - 'failed'
         """
-        pass
+        m = n + 1
+
+        logger.debug(f'Processing commit #{m}')
+        hexsha = commit_item.hexsha
+        if hexsha in self.dest_commit_hashes:
+            logger.debug(f'{hexsha} already mirrored, skipping commit #{m}')
+            return 'skipped'
+
+        try:
+            message = commit_item.message
+            committed_ts = commit_item.committed_date
+            committed_dt = commit_item.committed_datetime.isoformat()
+
+            workdir = self.dest_repo.working_dir
+            fpath = os.path.join(workdir, SUMMARYFILE)
+            gpath = os.path.join(workdir, GITCHMFILE)
+            with open(fpath, 'a+') as fh, open(gpath, 'a+') as gh:
+                fh.write(f'{message}\n')
+                gh.write(f'{hexsha}\n')
+
+            self.dest_repo.index.add([fpath, gpath])
+            self.dest_repo.index.commit(
+                message=message,
+                author=commit_item.author,
+                author_date=committed_dt,
+            committer=commit_item.committer,
+            commit_date=committed_dt
+            )
+
+        except Exception as e:
+            logger.error(f'Error while replicating commit #{m}: {e}')
+            return 'failed'
+
+        else:
+            logger.debug(f'Successfully replicated commit #{m}')
+            return 'replicated'
 
     def _set_active_dest_branch(self, dest_branch: str) -> None:
         """Sets active branch in destination repo."""
