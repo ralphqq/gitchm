@@ -10,8 +10,10 @@ Constants:
     DEST_FEATURE_COMMITS
 
 Helper functions:
+    load_iter_commits(iter_commits)
     load_commit_data()
     make_commits(repo, commits_data):
+    read_gitchm(workdir)
 
 Helper Classes:
     ModifiedCHM
@@ -19,8 +21,9 @@ Helper Classes:
 from datetime import datetime
 import json
 import os
+from typing import Generator
 
-from git import Actor, Repo
+from git import Actor, Commit, Repo
 
 from app.mirror import CommitHistoryMirror, GITCHMFILE
 
@@ -36,6 +39,27 @@ DEST_FEATURE_COMMITS = 4        # no. of dummy commits in dest feature
 
 
 # Helper functions
+
+def load_iter_commits(repo: Repo, branch: str = 'master') -> list:
+    """Makes fetched Commit items ready to be used in `make_commits()`.
+
+    This helper function converts the fetched Commits items into a list 
+    of dictionaries, similar to the output of `load_commit_data()`.
+    """
+    commits = repo.iter_commits(branch)
+    data = []
+    for commit in commits:
+        item = dict()
+        item['hexsha'] = commit.hexsha
+        item['message'] = commit.message
+        item['timestamp'] = commit.committed_date
+        item['author_name'] = commit.author.name
+        item['author_email'] = commit.author.email
+        item['committer_name'] = commit.committer.name
+        item['committer_email'] = commit.committer.email
+        data.append(item)
+    return data
+
 
 def load_commit_data() -> list:
     """Loads dummy commits data from JSON file."""
@@ -109,6 +133,14 @@ def make_commits(
         )
 
     return commits_data
+
+
+def read_gitchm(workdir: str) -> list:
+    """Returns contents of `.gitchmirror` as list."""
+    data = []
+    with open(os.path.join(workdir, GITCHMFILE)) as f:
+        data = f.read().splitlines()
+    return data
 
 
 # Helper classes

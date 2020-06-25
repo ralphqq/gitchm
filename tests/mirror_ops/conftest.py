@@ -3,8 +3,6 @@ Fixtures used to test mirror ops
 
 Fixtures:
     chm(init_source_repo)
-    iter_commits(init_source_repo)
-    empty_iter_commits()
     chm_dest_tree(dest_repo_tree, init_source_repo)
     chm_dest_master(dest_repo_mirror_master, init_source_repo)
     chm_dest_feature(dest_repo_mirror_feature, init_source_repo)
@@ -32,23 +30,6 @@ def chm(init_source_repo):
 
     # Delete dest working dir
     delete_dir(mirror.dest_repo.working_dir)
-
-
-@pytest.fixture
-def iter_commits(init_source_repo):
-    """Returns a generator of Commit objects."""
-    source_repo_path, _, _ = init_source_repo
-    repo = Repo(source_repo_path)
-    return repo.iter_commits('master')
-
-
-@pytest.fixture
-def empty_iter_commits():
-    """Generator of empty list."""
-    def empty_list_gen():
-        for p in []:
-            yield p
-    return empty_list_gen()
 
 
 # All fixtures below need to be refactored

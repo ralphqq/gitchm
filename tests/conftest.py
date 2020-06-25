@@ -4,6 +4,9 @@ Fixtures used throughout the test suite
 Fixtures:
     init_chm_test_session()
     init_source_repo(init_chm_test_session)
+    src_repo(init_source_repo)
+    iter_commits(init_source_repo)
+    empty_iter_commits()
     non_git_repo(init_source_repo)
     dest_repo_no_tree(non_git_repo)
     dest_repo_tree(dest_repo_no_tree)
@@ -22,7 +25,9 @@ from tests.utils import (
     DEST_MASTER_COMMITS,
     FEATURE_BRANCH,
     load_commit_data,
+    load_iter_commits,
     make_commits,
+    read_gitchm,
 )
 
 
@@ -85,6 +90,28 @@ def init_source_repo(init_chm_test_session):
 
 
 @pytest.fixture
+def src_repo(init_source_repo):
+    return Repo(init_source_repo[0])
+
+
+@pytest.fixture
+def iter_commits(init_source_repo):
+    """Returns a generator of Commit objects."""
+    source_repo_path, _, _ = init_source_repo
+    repo = Repo(source_repo_path)
+    return repo.iter_commits('master')
+
+
+@pytest.fixture
+def empty_iter_commits():
+    """Generator of empty list."""
+    def empty_list_gen():
+        for p in []:
+            yield p
+    return empty_list_gen()
+
+
+@pytest.fixture
 def non_git_repo(init_source_repo):
     """Sets up and tears down a directory that is not a git repo."""
     _, parent_dir, _ = init_source_repo
@@ -124,12 +151,12 @@ def dest_repo_tree(dest_repo_no_tree):
 
 
 @pytest.fixture
-def dest_repo_mirror_master(non_git_repo):
+def dest_repo_mirror_master(non_git_repo, src_repo):
     """Creates a mirror repo with commits in master."""
     repo = Repo.init(non_git_repo)
 
     # Reflect commits #1 and #2 into master
-    commits_data = load_commit_data()
+    commits_data = load_iter_commits(src_repo)
     make_commits(
         repo=repo,
         commits_data=commits_data[:DEST_MASTER_COMMITS],
@@ -152,7 +179,7 @@ def dest_repo_mirror_master(non_git_repo):
 
 
 @pytest.fixture
-def dest_repo_mirror_feature(dest_repo_mirror_master):
+def dest_repo_mirror_feature(dest_repo_mirror_master, src_repo):
     """Extends dest_repo_mirror_master by making commits in FEATURE_BRANCH."""
     repo = dest_repo_mirror_master
     for branch in repo.branches:
@@ -160,12 +187,11 @@ def dest_repo_mirror_feature(dest_repo_mirror_master):
             branch.checkout()
 
     # Reflect commits #3 and #4 to feature
-    commits_data = load_commit_data()
+    commits_data = load_iter_commits(src_repo)
     make_commits(
         repo=repo,
         commits_data=commits_data[DEST_MASTER_COMMITS:DEST_FEATURE_COMMITS],
         has_mirror=True
     )
-
     yield repo
     repo.heads.master.checkout()
