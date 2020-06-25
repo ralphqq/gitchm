@@ -40,23 +40,38 @@ DEST_FEATURE_COMMITS = 4        # no. of dummy commits in dest feature
 
 # Helper functions
 
-def load_iter_commits(repo: Repo, branch: str = 'master') -> list:
+def load_iter_commits(
+        repo: Repo,
+        branch: str = 'master',
+        mode: str = 'dict'
+    ) -> list:
     """Makes fetched Commit items ready to be used in `make_commits()`.
 
     This helper function converts the fetched Commits items into a list 
-    of dictionaries, similar to the output of `load_commit_data()`.
+    of dictionaries (similar to the output of `load_commit_data()`) or 
+    as a list of Commit objects.
+
+    Args:
+        repo (Repo): The repo to fetch commits from
+        branch (str): The branch to fetch commits from (default 
+            is 'master')
+        mode (str): Can either be 'dict' or 'obj':
+            - 'dict' (default): returns results as list of dicts
+            - 'obj': returns results as list of Commit objects
     """
     commits = repo.iter_commits(branch)
     data = []
     for commit in commits:
-        item = dict()
-        item['hexsha'] = commit.hexsha
-        item['message'] = commit.message
-        item['timestamp'] = commit.committed_date
-        item['author_name'] = commit.author.name
-        item['author_email'] = commit.author.email
-        item['committer_name'] = commit.committer.name
-        item['committer_email'] = commit.committer.email
+        item = commit
+        if mode == 'dict':
+            item = dict()
+            item['hexsha'] = commit.hexsha
+            item['message'] = commit.message
+            item['timestamp'] = commit.committed_date
+            item['author_name'] = commit.author.name
+            item['author_email'] = commit.author.email
+            item['committer_name'] = commit.committer.name
+            item['committer_email'] = commit.committer.email
         data.append(item)
     return data
 
