@@ -1,5 +1,6 @@
 import asyncio
 from collections import defaultdict
+from datetime import datetime
 import logging
 import os
 from typing import Generator, Union
@@ -196,11 +197,7 @@ class CommitHistoryMirror:
                 dest_branch = dest_branch if dest_branch else source_branch
                 self._set_active_dest_branch(dest_branch)
                 self.dest_head_commit = self.dest_repo.head.commit
-
-                self._check_mirror_state(
-                    repo_name='dest',
-                    branch=dest_branch
-                )
+                self._check_mirror_state()
 
             # Set up git-rev-list-options
             options = clean_dict({
@@ -270,7 +267,7 @@ class CommitHistoryMirror:
         try:
             message = commit_item.message
             committed_ts = commit_item.committed_date
-            committed_dt = commit_item.committed_datetime.isoformat()
+            committed_dt = datetime.fromtimestamp(committed_ts).isoformat()
 
             workdir = self.dest_repo.working_dir
             fpath = os.path.join(workdir, SUMMARYFILE)
@@ -375,7 +372,7 @@ class CommitHistoryMirror:
             logger.info('Detected destination is a mirror repo')
 
             with open(fpath, 'r', encoding='utf-8') as f:
-                self.dest_commit_hashes = f.readlines()
+                self.dest_commit_hashes = f.read().splitlines()
 
             logger.info(
                 f'Found {len(self.dest_commit_hashes)} '
