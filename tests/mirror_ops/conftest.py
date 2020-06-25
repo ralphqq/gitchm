@@ -3,7 +3,7 @@ Fixtures used to test mirror ops
 
 Fixtures:
     chm(init_source_repo)
-    iter_commits(chm)
+    iter_commits(init_source_repo)
     empty_iter_commits()
     chm_dest_tree(dest_repo_tree, init_source_repo)
     chm_dest_master(dest_repo_mirror_master, init_source_repo)
@@ -35,10 +35,11 @@ def chm(init_source_repo):
 
 
 @pytest.fixture
-def iter_commits(chm):
+def iter_commits(init_source_repo):
     """Returns a generator of Commit objects."""
-    m = chm['mirror']
-    return m.source_repo.iter_commits('master')
+    source_repo_path, _, _ = init_source_repo
+    repo = Repo(source_repo_path)
+    return repo.iter_commits('master')
 
 
 @pytest.fixture
