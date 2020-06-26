@@ -3,7 +3,7 @@ from git.exc import GitError
 import pytest
 
 from app.mirror import CommitHistoryMirror
-from tests.utils import load_iter_commits
+from tests.utils import FEATURE_BRANCH, load_iter_commits
 
 
 class TestCommit:
@@ -14,14 +14,28 @@ class TestCommit:
         mocker.patch.object(IndexFile, 'add')
         mocker.patch.object(IndexFile, 'commit')
 
-    async def setup_mirror(self, chm_object, **kwargs):
-        m = chm_object['mirror']
+    async def setup_mirror(self, chm_dict, commit_num=None, **kwargs):
+        """Initializes mirror and loads commit object to replicate.
+
+        Args:
+            chm_obj (dict): The dictionary returned by a chm fixture
+            commit_num (int): The list index of the commit to return
+            kwargs: Keyword args of the method `reflect()` method
+
+        Returns:
+            tuple: mirror, commit
+        """
+        c = None
+        m = chm_dict['mirror']
         await m.reflect(**kwargs)
-        return m
+        if commit_num is not None:
+            commits = load_iter_commits(m.source_repo, mode='obj')
+            c = commits[commit_num]
+        return m, c
 
     @pytest.mark.asyncio
     async def test_mirror_commit_skipped(self, chm_dest_master, mocked_stuff):
-        m = await self.setup_mirror(chm_dest_master)
+        m, _ = await self.setup_mirror(chm_dest_master)
 
         # Try to mirror a commit already in dest repo
         mirrored_commit = m.source_repo.head.commit
@@ -33,23 +47,20 @@ class TestCommit:
 
     @pytest.mark.asyncio
     async def test_commit_error_result(self, chm, mocked_stuff):
-        m = await self.setup_mirror(chm)
+        num = 0
+        m, c = await self.setup_mirror(chm, num)
 
-        # Load a source commit not yet in dest
-        commits = load_iter_commits(m.source_repo, mode='obj')
-        
         # Throw an error
         IndexFile.add.side_effect = GitError
-        result = await m._commit(0, commits[0])
+        result = await m._commit(num, c)
         assert result == 'failed'
 
     @pytest.mark.asyncio
     async def test_commit_no_tree(self, chm, mocked_stuff):
-        m = await self.setup_mirror(chm)
+        num = 0
+        m, c = await self.setup_mirror(chm, num)
 
-        # Load a source commit not yet in dest
-        commits = load_iter_commits(m.source_repo, mode='obj')
-        result = await m._commit(0, commits[0])
+        result = await m._commit(num, c)
 
         assert result == 'replicated'
         assert IndexFile.add.called
@@ -57,11 +68,10 @@ class TestCommit:
 
     @pytest.mark.asyncio
     async def test_commit_with_tree(self, chm_dest_tree, mocked_stuff):
-        m = await self.setup_mirror(chm_dest_tree)
+        num = 0
+        m, c = await self.setup_mirror(chm_dest_tree, num)
 
-        # Load a source commit not yet in dest
-        commits = load_iter_commits(m.source_repo, mode='obj')
-        result = await m._commit(0, commits[0])
+        result = await m._commit(num, c)
 
         assert result == 'replicated'
         assert IndexFile.add.called
@@ -69,11 +79,10 @@ class TestCommit:
 
     @pytest.mark.asyncio
     async def test_commit_dest_master(self, chm_dest_master, mocked_stuff):
-        m = await self.setup_mirror(chm_dest_master)
+        num = -1
+        m, c = await self.setup_mirror(chm_dest_master, num)
 
-        # Load a source commit not yet in dest
-        commits = load_iter_commits(m.source_repo, mode='obj')
-        result = await m._commit(0, commits[-1])
+        result = await m._commit(num, c)
 
         assert result == 'replicated'
         assert IndexFile.add.called
@@ -81,11 +90,14 @@ class TestCommit:
 
     @pytest.mark.asyncio
     async def test_commit_dest_feature(self, chm_dest_feature, mocked_stuff):
-        m = await self.setup_mirror(chm_dest_feature)
+        num = -1
+        m, c = await self.setup_mirror(
+            chm_dict=chm_dest_feature,
+            commit_num=num,
+            dest_branch=FEATURE_BRANCH
+        )
 
-        # Load a source commit not yet in dest
-        commits = load_iter_commits(m.source_repo, mode='obj')
-        result = await m._commit(0, commits[-1])
+        result = await m._commit(num, c)
 
         assert result == 'replicated'
         assert IndexFile.add.called
