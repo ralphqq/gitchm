@@ -10,10 +10,14 @@ Constants:
     DEST_FEATURE_COMMITS
 
 Helper functions:
-    load_iter_commits(iter_commits)
+    load_iter_commits(repo, branch='master', mode='dict')
     load_commit_data()
     make_commits(repo, commits_data):
     read_gitchm(workdir)
+    listify_attribute(seq, mode='obj')
+
+Coroutines:
+    run_mirror_ops(mirror, **kwargs)
 
 Helper Classes:
     ModifiedCHM
@@ -152,10 +156,30 @@ def make_commits(
 
 def read_gitchm(workdir: str) -> list:
     """Returns contents of `.gitchmirror` as list."""
+    if mode not in ['obj', 'dict']:
+        raise ValueError('mode must be obj or dict')
     data = []
     with open(os.path.join(workdir, GITCHMFILE)) as f:
         data = f.read().splitlines()
     return data
+
+
+def listify_attribute(seq: list, attr: str, mode: str = 'obj') -> list:
+    """Returns list of values specified by attribute or dict key."""
+    if mode not in ['obj', 'dict']:
+        raise ValueError('mode must be obj or dict')
+
+    if mode == 'obj':
+        return [getattr(p, attr) for p in seq]
+    elif mode == 'dict':
+        return [p.get(attr) for p in seq]
+
+
+# Coroutines
+
+async def run_mirror_ops(mirror: CommitHistoryMirror, **kwargs) -> None:
+    """Runs `mirror.reflect()` with given kwargs."""
+    await mirror.reflect(**kwargs)
 
 
 # Helper classes

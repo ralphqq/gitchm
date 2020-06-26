@@ -91,7 +91,8 @@ def init_source_repo(init_chm_test_session):
 
 @pytest.fixture
 def src_repo(init_source_repo):
-    return Repo(init_source_repo[0])
+    src_workdir = init_source_repo[0]
+    return Repo(src_workdir)
 
 
 @pytest.fixture
