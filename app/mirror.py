@@ -209,12 +209,12 @@ class CommitHistoryMirror:
                 'regexp_ignore_case': True,
             })
 
-            logger.info(
+            logger.debug(
                 f'Fetching commits from source repo using options {options}'
             )
             commits = self.source_repo.iter_commits(**options)
             await self._replicate(commits)
-            logger.info('Finished replicating commit history')
+            logger.debug('Finished replicating commit history')
 
         except Exception as e:
             logger.error(
@@ -234,14 +234,16 @@ class CommitHistoryMirror:
         self.stats['found'] = task_count
 
         if task_count:
-            logger.info(f'Found {task_count} commits to replicate')
+            logger.info(
+                f'Found {task_count} commits that matched specified options'
+            )
             for coro in asyncio.as_completed(tasks):
                 result = await coro
                 self.stats[result] += 1
                 self.stats['processed'] += 1
 
             logger.info(
-                f"Processed {self.stats['processed']}/{task_count} commits"
+                f"Processed {self.stats['processed']} of {task_count} commits"
             )
 
         else:
