@@ -143,11 +143,14 @@ def dest_repo_no_tree(non_git_repo):
 def dest_repo_tree(dest_repo_no_tree):
     """Creates repo with working tree head at branch master."""
     repo = dest_repo_no_tree
-    commits_data = load_commit_data()
-    make_commits(
-        repo=repo,
-        commits_data=commits_data[:DEST_MASTER_COMMITS]   # 1st 2 commits
-    )
+
+    # Create and commit a file
+    fpath = os.path.join(repo.working_dir, 'something.txt')
+    with open(fpath, 'w') as f:
+        f.write(f'Mundul vult decipi, ergo decipiatur.')
+    repo.index.add([fpath])
+    repo.index.commit('Dummy commit')
+
     yield repo
 
 

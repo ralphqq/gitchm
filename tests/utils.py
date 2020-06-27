@@ -63,6 +63,8 @@ def load_iter_commits(
             - 'dict' (default): returns results as list of dicts
             - 'obj': returns results as list of Commit objects
     """
+    if mode not in ['obj', 'dict']:
+        raise ValueError('mode must be obj or dict')
     commits = repo.iter_commits(branch)
     data = []
     for commit in commits:
@@ -156,8 +158,6 @@ def make_commits(
 
 def read_gitchm(workdir: str) -> list:
     """Returns contents of `.gitchmirror` as list."""
-    if mode not in ['obj', 'dict']:
-        raise ValueError('mode must be obj or dict')
     data = []
     with open(os.path.join(workdir, GITCHMFILE)) as f:
         data = f.read().splitlines()
