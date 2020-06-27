@@ -47,7 +47,8 @@ DEST_FEATURE_COMMITS = 4        # no. of dummy commits in dest feature
 def load_iter_commits(
         repo: Repo,
         branch: str = 'master',
-        mode: str = 'dict'
+        mode: str = 'dict',
+        **kwargs
     ) -> list:
     """Makes fetched Commit items ready to be used in `make_commits()`.
 
@@ -62,10 +63,11 @@ def load_iter_commits(
         mode (str): Can either be 'dict' or 'obj':
             - 'dict' (default): returns results as list of dicts
             - 'obj': returns results as list of Commit objects
+        kwargs: optional params for filtering commits
     """
     if mode not in ['obj', 'dict']:
         raise ValueError('mode must be obj or dict')
-    commits = repo.iter_commits(branch)
+    commits = repo.iter_commits(branch, **kwargs)
     data = []
     for commit in commits:
         item = commit
