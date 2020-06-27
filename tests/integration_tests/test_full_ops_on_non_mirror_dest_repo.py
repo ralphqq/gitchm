@@ -1,5 +1,5 @@
 """
-End-to-end mirror ops tests for different scenarious 
+End-to-end mirror ops tests for different scenarios 
 involving non-mirror destination repos.
 
 Test Classes:
@@ -13,7 +13,6 @@ import os
 from git import Repo
 import pytest
 
-from app.mirror import CommitHistoryMirror
 from app.utils import delete_dir
 from tests.utils import (
     listify_attribute,

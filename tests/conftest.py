@@ -172,14 +172,19 @@ def dest_repo_mirror_master(non_git_repo, src_repo):
 
     yield repo
 
-    # Make sure to check out master before deleting other branches
-    if repo.active_branch.name != 'master':
-        repo.heads.master.checkout(force=True)
+    # Cleanup step
 
-    # Delete branches except 'master' and FEATURE_BRANCH
-    for branch in repo.branches:
-        if branch.name not in ['master', FEATURE_BRANCH]:
-            repo.delete_head(branch)
+    # Check first if dest repo workdir still exists
+    # since sometimes, it can be deleted by another fixture
+    if os.path.exists(repo.working_dir):
+        if repo.active_branch.name != 'master':
+            # Make sure to check out master before deleting other branches
+            repo.heads.master.checkout(force=True)
+
+        # Delete branches except 'master' and FEATURE_BRANCH
+        for branch in repo.branches:
+            if branch.name not in ['master', FEATURE_BRANCH]:
+                repo.delete_head(branch)
 
 
 @pytest.fixture
@@ -198,4 +203,3 @@ def dest_repo_mirror_feature(dest_repo_mirror_master, src_repo):
         has_mirror=True
     )
     yield repo
-    repo.heads.master.checkout(force=True)
