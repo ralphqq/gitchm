@@ -44,7 +44,7 @@ class TestMirrorOpsReflectOptions:
         delete_dir(mirror.dest_repo.working_dir)
 
     @pytest.mark.asyncio
-    async def test_something(self, init_cases):
+    async def test_various_values_for_reflect_params(self, init_cases):
         m, options = init_cases
         eq_ne = operator.ne
         expected_replicated = 0
