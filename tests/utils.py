@@ -67,6 +67,10 @@ def load_iter_commits(
     """
     if mode not in ['obj', 'dict']:
         raise ValueError('mode must be obj or dict')
+
+    if kwargs:
+        kwargs.update({'regexp_ignore_case': True})
+
     commits = repo.iter_commits(branch, **kwargs)
     data = []
     for commit in commits:
