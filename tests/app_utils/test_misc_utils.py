@@ -4,6 +4,7 @@ Other utils tests
 Classes:
     TestMiscUtils
 """
+from datetime import datetime
 import os
 
 from git import Actor
@@ -13,7 +14,14 @@ from app.exc import IncompleteCommitDetails
 from app.utils import (
     clean_dict,
     create_actor,
+    to_datetime,
 )
+
+
+EXPECTED_DT1 = datetime(2020, 6, 28)    # No time of day
+EXPECTED_DT2 = datetime(2020, 6, 28, 15, 30)    # No seconds
+EXPECTED_DT3 = datetime(2020, 6, 28, 15, 30, 10)    # With seconds
+EXPECTED_TS1 = EXPECTED_DT1.timestamp()
 
 
 class TestMiscUtils:
@@ -43,3 +51,28 @@ class TestMiscUtils:
         else:
             actor = create_actor(name=name, email=email)
             assert isinstance(actor, Actor)
+
+    @pytest.mark.parametrize('date_str,output,expected_result',[
+        ('2020/6/28', 'dt', EXPECTED_DT1),
+        ('2020/6/28', 'ts', EXPECTED_TS1),
+        ('2020/06/28', 'dt', EXPECTED_DT1),
+        ('6/28/2020', 'dt', EXPECTED_DT1),
+        ('2020-6-28', 'dt', EXPECTED_DT1),
+        ('2020-06-28', 'dt', EXPECTED_DT1),
+        ('June 28, 2020', 'dt', EXPECTED_DT1),
+        ('28 June 2020', 'dt', EXPECTED_DT1),
+        ('June 28, 2020 3:30 PM', 'dt', EXPECTED_DT2),
+        ('28 June 2020 3:30 p.m.', 'dt', EXPECTED_DT2),
+        ('2020-6-28 15:30', 'dt', EXPECTED_DT2),
+        ('2020-6-28 15:30:10', 'dt', EXPECTED_DT3),
+    ])
+    def test_valid_date_str(self, date_str, output, expected_result):
+        assert to_datetime(date_str, output) == expected_result
+
+    def test_invalid_date_output(self):
+        with pytest.raises(ValueError):
+            to_datetime('2020/6/28', 'xx')
+
+    def test_invalid_date_input(self):
+        with pytest.raises(ValueError):
+            to_datetime('sla;khfa')
