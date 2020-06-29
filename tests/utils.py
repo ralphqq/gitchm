@@ -8,6 +8,7 @@ Constants:
     FEATURE_BRANCH
     DEST_MASTER_COMMITS
     DEST_FEATURE_COMMITS
+    ITEM_OPS_RETURN_VALUE
 
 Helper functions:
     load_iter_commits(repo, branch='master', mode='dict')
@@ -40,7 +41,7 @@ DEST_REPO_PREFIX = 'mirror'
 FEATURE_BRANCH = 'feature'
 DEST_MASTER_COMMITS = 2     # no. of dummy commits in dest master
 DEST_FEATURE_COMMITS = 4        # no. of dummy commits in dest feature
-
+ITEM_OPS_RETURN_VALUE = 'value'
 
 # Helper functions
 
