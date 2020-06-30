@@ -4,12 +4,14 @@ Test fixtures used in the CLI tests
 Fixtures:
     mocked_item_func()
     item_ops_factory()
+    default_item()
+    required_item()
 """
 from unittest.mock import MagicMock
 
 import pytest
 
-from app.cli import ItemParser
+from app.cli import ItemParser, PromptItem
 from tests.utils import ITEM_OPS_RETURN_VALUE
 
 
@@ -27,9 +29,27 @@ def item_ops_factory():
         return [
             ItemParser(
                 apply=m,
-                params=params,
+                params=params[i],
                 error_msg=str(i)
             )
             for i in range(len(side_effect))
         ]
     return _create
+
+
+@pytest.fixture
+def default_item():
+    item = PromptItem(
+        name='default_item',
+        message='Optional field',
+    )
+    return item
+
+@pytest.fixture
+def required_item():
+    item = PromptItem(
+        name='required_item',
+        message='Required field',
+        is_required=True
+    )
+    return item

@@ -58,7 +58,8 @@ class PromptItem:
 
         if self.validators is not None:
             for v in self.validators:
-                result = v.validate(value, **v.params)
+                params = v.params or {}
+                result = v.apply(value, **params)
 
                 if not result:
                     raise ValidationError(
@@ -77,7 +78,8 @@ class PromptItem:
 
             if self.transformers is not None:
                 for t in self.transformers:
-                    val = t.transform(val, **t.params)
+                    params = t.params or {}
+                    val = t.apply(val, **params)
 
             return val
 
