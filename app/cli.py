@@ -4,6 +4,7 @@ CLI
 Classes:
     ItemValidator
     ItemTransformer
+    ItemParser
     PromptItem
     PromptUI
 """
@@ -16,15 +17,10 @@ from app.exc import TransformationError, ValidationError
 # Classes
 
 @dataclass
-class ItemValidator:
-    validate: Callable
-    params: dict = None
-    error_msg: str = ''
+class ItemParser:
+    """Wraps a validator or transformation function."""
 
-
-@dataclass
-class ItemTransformer:
-    transform: Callable
+    apply: Callable
     params: dict = None
     error_msg: str = ''
 
@@ -38,8 +34,8 @@ class PromptItem:
     is_required: bool = False
     data_type: type = str
     depends_on: 'PromptItem' = None
-    validators: List[ItemValidator] = None
-    transformers: List[ItemTransformer] = None
+    validators: List[ItemParser] = None
+    transformers: List[ItemParser] = None
 
     def __repr__(self) -> str:
         return f'<PromptItem {self.name}>'
@@ -51,20 +47,37 @@ class PromptItem:
             self.value = self._transform(value)
 
     def _validate(self, value: str) -> bool:
+        """Checks if value meets validation rules.
+
+        This method returns `True` only when value 
+        passes all validation rules; otherwise, 
+        it raises `ValidationError`.
+        """
         if not value and self.is_required:
             raise ValidationError(f'This is a required field.')
-        for v in self.validators:
+
+        if self.validators is not None:
+            for v in self.validators:
                 result = v.validate(value, **v.params)
+
                 if not result:
                     raise ValidationError(
                         f'Error validating {self.name}: {v.error_msg}'
                     )
 
+        return True
+
     def _transform(self, value: str) -> Any:
+        """Casts value into given data type and applies transformations."""
+        if not value:
+            return None
+
         try:
             val = self.data_type(value)
-            for t in self.transformers:
-                val = t.transform(val, **t.params)
+
+            if self.transformers is not None:
+                for t in self.transformers:
+                    val = t.transform(val, **t.params)
 
             return val
 
