@@ -79,8 +79,8 @@ class TestPrompItemValidate:
         result = default_item._validate(INPUT3.strip())
         assert result
 
-    def test_validate_with_validators(self, required_item, item_ops_factory):
-        validators = item_ops_factory(
+    def test_validate_with_validators(self, required_item, item_parsers):
+        validators = item_parsers(
             side_effect=VF_SIDE_EFFECT,
             params=PARAMS
         )
@@ -96,9 +96,9 @@ class TestPrompItemValidate:
             call(INPUT1),
         ])
 
-    def test_validate_with_errors(self, required_item, item_ops_factory):
+    def test_validate_with_errors(self, required_item, item_parsers):
         side_effect = [True, False, True]
-        validators = item_ops_factory(
+        validators = item_parsers(
             side_effect=side_effect,
             params=PARAMS
         )
@@ -136,8 +136,8 @@ class TestPrompItemTransform:
             with pytest.raises(TransformationError):
                 required_item._transform(input_value)
 
-    def test_transform_transformers(self, required_item, item_ops_factory):
-        transformers = item_ops_factory(
+    def test_transform_transformers(self, required_item, item_parsers):
+        transformers = item_parsers(
             side_effect=TR_SIDE_EFFECT1,
             params=PARAMS
         )
@@ -157,9 +157,9 @@ class TestPrompItemTransform:
             call(TR_SIDE_EFFECT1[1]),
         ])
 
-    def test_transform_with_errors(self, required_item, item_ops_factory):
+    def test_transform_with_errors(self, required_item, item_parsers):
         side_effect = ['a', ValueError, 'b']
-        transformers = item_ops_factory(
+        transformers = item_parsers(
             side_effect=side_effect,
             params=PARAMS
         )
