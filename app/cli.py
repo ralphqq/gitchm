@@ -2,16 +2,17 @@
 CLI
 
 Classes:
-    ItemValidator
-    ItemTransformer
     ItemParser
     PromptItem
     PromptUI
 """
+from collections import defaultdict
 from dataclasses import dataclass
+import sys
 from typing import Any, Callable, List
 
 from app.exc import TransformationError, ValidationError
+from app.utils import clean_dict
 
 
 # Classes
@@ -34,6 +35,7 @@ class PromptItem:
     is_required: bool = False
     data_type: type = str
     depends_on: 'PromptItem' = None
+    group: str = 'menu'
     validators: List[ItemParser] = None
     transformers: List[ItemParser] = None
 
@@ -88,4 +90,36 @@ class PromptItem:
 
 
 class PromptUI:
-    pass
+
+    def __init__(self, prompt_items: List[PromptItem]) -> None:
+        self.prompt_items = prompt_items
+        self.options = defaultdict(dict)
+
+    def start(self) -> None:
+        for prompt_item in self.prompt_items:
+            parent_item = prompt_item.depends_on
+            if parent_item and getattr(parent_item, 'value', None) is None:
+                # Skip if parent item has no value
+                continue
+
+            value = self._get_user_input(prompt_item)
+            if value is not None:
+                group = prompt_item.group
+                name = prompt_item.name
+                self.options[group][name] = value
+
+        self._finalize_options()
+
+    def _get_user_input(self, prompt_item: PromptItem) -> Any:
+        while True:
+            try:
+                value = input(prompt_item.message)
+                return prompt_item.process_input(value)
+
+            except (TransformationError, ValidationError) as e:
+                sys.stderr.write(e)
+
+    def _finalize_options(self) -> None:
+        self.options = {
+            group: clean_dict(values) for group, values in self.options.items()
+        }

@@ -16,6 +16,7 @@ Helper functions:
     make_commits(repo, commits_data):
     read_gitchm(workdir)
     listify_attribute(seq, mode='obj')
+    set_attr_or_key(seq, field, values)
 
 Coroutines:
     run_mirror_ops(mirror, **kwargs)
@@ -180,6 +181,29 @@ def listify_attribute(seq: list, attr: str, mode: str = 'obj') -> list:
         return [getattr(p, attr) for p in seq]
     elif mode == 'dict':
         return [p.get(attr) for p in seq]
+
+
+def set_attr_or_key(seq: list, field: str, values: list) -> None:
+    """Sets value to the given attribute or key for each item in `seq`.
+
+    If the items are dicts, the function assigns given values to the 
+    specified key of each item. Otherwise, the values are assigned 
+    to the given attribute of each object.
+
+    Args:
+        seq (list): The list of dictionaries or objects
+        field (str): The name of the key or attribute to be modified
+        values (list): The list of values to be assigned; must be of the
+            same length as `seq`, and each item in `values` must 
+            exactly correspond to an item in `seq` (i.e.,the  item at 
+            index n of `values` should correspond to the item at
+            index n of `seq`)
+    """
+    for item, val in zip(seq, values):
+        if isinstance(item, dict):
+            item[field] = val
+        else:
+            setattr(item, field, val)
 
 
 # Coroutines
