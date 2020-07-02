@@ -162,7 +162,6 @@ class TestPromptUIGetUserInput:
 
         assert result is None
         assert mocked_input.call_count == num_attempts
-        assert not mocked_stderr.called
 
 
 class TestPromptUIMiscMethods:
