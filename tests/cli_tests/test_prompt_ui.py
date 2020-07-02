@@ -149,6 +149,21 @@ class TestPromptUIGetUserInput:
         assert mocked_stderr.call_count == 2
         assert prompt_item.process_input.call_count == num_attempts
 
+    def test_input_keyboard_interrupt(self, prompt_ui, mocked_input_methods):
+        mocked_input ,mocked_stderr = mocked_input_methods
+
+        # Fail on first 2 attempts, KeyboardInterrupt on 3rd
+        side_effect = [ValidationError, TransformationError, KeyboardInterrupt]
+        num_attempts = len(side_effect)
+
+        prompt_item = prompt_ui.prompt_items[0]
+        mocked_input.side_effect = side_effect
+        result = prompt_ui._get_user_input(prompt_item)
+
+        assert result is None
+        assert mocked_input.call_count == num_attempts
+        assert not mocked_stderr.called
+
 
 class TestPromptUIMiscMethods:
 

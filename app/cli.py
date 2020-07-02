@@ -118,6 +118,9 @@ class PromptUI:
             except (TransformationError, ValidationError) as e:
                 sys.stderr.write(f'{e}')
 
+            except KeyboardInterrupt:
+                break
+
     def _skip_item(self, prompt_item: PromptItem) -> bool:
         """Checks if prompt_item should be skipped or not."""
         activator = prompt_item.active_on
