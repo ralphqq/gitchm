@@ -31,7 +31,7 @@ RETURN_VALUE = 'parsed-value'
 @pytest.fixture
 def prompt_ui(prompt_items):
     items = prompt_items(names=NAMES, groups=GROUPS, values=SIDE_EFFECT)
-    items[1].depends_on = items[0]
+    items[1].active_on = items[0]
     return PromptUI(prompt_items=items)
 
 
@@ -71,6 +71,41 @@ class TestPromptUIStart:
 
         assert len(actual_calls) == 3
         assert call(prompt_ui.prompt_items[1]) not in actual_calls
+        assert prompt_ui._finalize_options.called
+
+    def test_start_has_inactivator_is_skipped(
+            self,
+            prompt_ui,
+            mocked_start_methods
+        ):
+        # Set item 2 as inactivator of item 3
+        items = prompt_ui.prompt_items
+        items[3].inactive_on = items[2]
+
+        prompt_ui.start()
+        actual_calls = prompt_ui._get_user_input.mock_calls
+
+        assert len(actual_calls) == 3
+        assert call(prompt_ui.prompt_items[3]) not in actual_calls
+        assert prompt_ui._finalize_options.called
+
+
+    def test_start_has_inactivator_is_not_skipped(
+            self,
+            prompt_ui,
+            mocked_start_methods
+        ):
+        # Set item 2 as inactivator of item 3
+        # but set value of item 2 to None
+        items = prompt_ui.prompt_items
+        items[3].inactive_on = items[2]
+        set_attr_or_key(items, 'value', ['a', 'b', None, 'd'])
+
+        prompt_ui.start()
+        actual_calls = prompt_ui._get_user_input.mock_calls
+
+        assert len(actual_calls) == len(items)
+        assert call(prompt_ui.prompt_items[3]) in actual_calls
         assert prompt_ui._finalize_options.called
 
 
@@ -116,6 +151,22 @@ class TestPromptUIGetUserInput:
 
 
 class TestPromptUIMiscMethods:
+
+    @pytest.mark.parametrize('i,side_effect,result', [
+        (3, ['a', 'b', 'c', 'd'], True),
+        (3, ['a', 'b', None, 'd'], False),
+        (1, ['a', 'b', 'c', 'd'], False),
+        (1, [None, 'b', 'c', 'd'], True),
+    ])
+    def test_skip_item(self, i, side_effect, result, prompt_items):
+        items = prompt_items(names=NAMES, groups=GROUPS, values=side_effect)
+        if i == 1:
+            items[i].active_on = items[i - 1]
+        elif i == 3:
+            items[i].inactive_on = items[i - 1]
+        ui = PromptUI(items)
+        res = ui._skip_item(items[i])
+        assert res == result
 
     def test_finalize_options(self, prompt_ui):
         prompt_ui.options['init'] = {'a': None, 'b': 2, 'c': 3}

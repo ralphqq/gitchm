@@ -34,7 +34,8 @@ class PromptItem:
     message: str
     is_required: bool = False
     data_type: type = str
-    depends_on: 'PromptItem' = None
+    active_on: 'PromptItem' = None
+    inactive_on: 'PromptItem' = None
     group: str = 'menu'
     validators: List[ItemParser] = None
     transformers: List[ItemParser] = None
@@ -97,11 +98,13 @@ class PromptUI:
 
     def start(self) -> None:
         for prompt_item in self.prompt_items:
-            parent_item = prompt_item.depends_on
-            if parent_item and getattr(parent_item, 'value', None) is None:
-                # Skip if parent item has no value
+            skipped = self._skip_item(prompt_item)
+            print(f'{prompt_item.name} is skipped: {skipped}')
+            if skipped:
+                print(f'Input is not called for {prompt_item.name}')
                 continue
 
+            print(f'Input is called for {prompt_item.name}')
             value = self._get_user_input(prompt_item)
             if value is not None:
                 group = prompt_item.group
@@ -118,6 +121,18 @@ class PromptUI:
 
             except (TransformationError, ValidationError) as e:
                 sys.stderr.write(e)
+
+    def _skip_item(self, prompt_item: PromptItem) -> bool:
+        """Checks if prompt_item should be skipped or not."""
+        activator = prompt_item.active_on
+        inactivator = prompt_item.inactive_on
+        if inactivator:
+            print(f'{prompt_item.name} inactivator is {prompt_item.inactive_on.name}')
+            print(f'{inactivator.name} has value of ', getattr(inactivator, 'value', None))
+        return bool(
+            (activator and getattr(activator, 'value', None) is None) or
+            (inactivator and getattr(inactivator, 'value', None) is not None)
+        )
 
     def _finalize_options(self) -> None:
         self.options = {
