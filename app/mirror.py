@@ -214,7 +214,6 @@ class CommitHistoryMirror:
             )
             commits = self.source_repo.iter_commits(**options)
             await self._replicate(commits)
-            logger.debug('Finished replicating commit history')
 
         except Exception as e:
             logger.error(
@@ -245,9 +244,10 @@ class CommitHistoryMirror:
             logger.info(
                 f"Processed {self.stats['processed']} of {task_count} commits"
             )
-
         else:
             logger.info('No commits found that matched the provided options')
+
+        logger.debug('Closing replication process')
 
     async def _commit(self, n: int, commit_item: Commit) -> str:
         """Makes the commit into the destination repo.
