@@ -6,6 +6,7 @@ Classes:
 """
 from datetime import datetime
 import os
+import re
 
 from git import Actor
 import pytest
@@ -14,6 +15,7 @@ from app.exc import IncompleteCommitDetails
 from app.utils import (
     clean_dict,
     create_actor,
+    format_stats,
     to_datetime,
 )
 
@@ -76,3 +78,10 @@ class TestMiscUtils:
     def test_invalid_date_input(self):
         with pytest.raises(ValueError):
             to_datetime('sla;khfa')
+
+    def test_format_stats(self):
+        stats = {'a': 12, 'b': 34, 'c': 0}
+        result = format_stats(stats)
+
+        assert isinstance(result, str)
+        assert len(re.findall(r'\w+: \d+ commits', result)) == len(stats)

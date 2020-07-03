@@ -10,6 +10,7 @@ Helper functions:
     clean_dict(orig_dict)
     create_actor(name, email)
     to_datetime(date_str, output='dt')
+    format_stats(stats)
 """
 from datetime import datetime
 import functools
@@ -109,3 +110,8 @@ def to_datetime(text: str, output: str = 'dt') -> Union[datetime, int]:
             f"Unable to convert string '{text}' "
             f"into datetime or timestamp: {e}"
         )
+
+
+def format_stats(stats: dict) -> str:
+    """Prepares stats for logging."""
+    return ', '.join([f'{k}: {v} commits' for k, v in stats.items()])
