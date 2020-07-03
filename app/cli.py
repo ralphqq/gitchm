@@ -48,6 +48,7 @@ class PromptItem:
         value = value.strip()
         if self._validate(value):
             self.value = self._transform(value)
+            return self.value
 
     def _validate(self, value: str) -> bool:
         """Checks if value meets validation rules.
