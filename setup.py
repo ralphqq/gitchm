@@ -43,6 +43,7 @@ setup(
     long_description_content_type="text/markdown",
     author=INFO['author'],
     author_email=INFO['author_email'],
+    packages=PACKAGES,
     install_requires=REQUIRES,
     extras_require={'tests': TEST_REQUIRES},
     python_requires='>=3.8',
