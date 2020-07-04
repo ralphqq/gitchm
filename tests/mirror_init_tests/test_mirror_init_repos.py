@@ -6,8 +6,8 @@ from git import Repo
 from git.exc import GitCommandError, GitError
 import pytest
 
-from app.mirror import CommitHistoryMirror
-from app.utils import create_dir, delete_dir
+from gitchm.mirror import CommitHistoryMirror
+from gitchm.utils import create_dir, delete_dir
 from tests.utils import DEST_REPO_PREFIX, ModifiedCHM
 
 

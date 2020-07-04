@@ -11,7 +11,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.cli import ItemParser, PromptItem, PromptUI
+from gitchm.cli import ItemParser, PromptItem, PromptUI
 from tests.utils import (
     ITEM_OPS_RETURN_VALUE,
     set_attr_or_key,

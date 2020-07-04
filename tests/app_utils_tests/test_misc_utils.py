@@ -11,8 +11,8 @@ import re
 from git import Actor
 import pytest
 
-from app.exc import IncompleteCommitDetails
-from app.utils import (
+from gitchm.exc import IncompleteCommitDetails
+from gitchm.utils import (
     clean_dict,
     create_actor,
     format_stats,

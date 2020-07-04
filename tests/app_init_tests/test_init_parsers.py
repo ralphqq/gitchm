@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from app.init import date_to_ts, path_parser
+from gitchm.init import date_to_ts, path_parser
 
 
 EXPECTED_DT1 = datetime(2020, 6, 28)    # No time of day

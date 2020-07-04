@@ -5,14 +5,14 @@ import asyncio
 import logging
 import os
 
-from app.init import (
+from gitchm.init import (
     INIT,
     LOGLEVEL,
     REFLECT,
     ui,
 )
-from app.mirror import CommitHistoryMirror
-from app.utils import format_stats
+from gitchm.mirror import CommitHistoryMirror
+from gitchm.utils import format_stats
 
 
 def main() -> None:

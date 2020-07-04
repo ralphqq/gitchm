@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.mirror import CommitHistoryMirror
+from gitchm.mirror import CommitHistoryMirror
 
 SIDE_EFFECT = [
     'replicated',

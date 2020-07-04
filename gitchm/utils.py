@@ -23,7 +23,7 @@ from git import Actor
 from git.exc import GitError
 from dateutil.parser import parse
 
-from app.exc import IncompleteCommitDetails
+from gitchm.exc import IncompleteCommitDetails
 
 
 logger = logging.getLogger(__name__)

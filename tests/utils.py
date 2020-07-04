@@ -31,7 +31,7 @@ from typing import Generator
 
 from git import Actor, Commit, Repo
 
-from app.mirror import CommitHistoryMirror, GITCHMFILE
+from gitchm.mirror import CommitHistoryMirror, GITCHMFILE
 
 
 # Constants

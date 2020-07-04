@@ -4,7 +4,7 @@ from git import Repo
 from git.exc import GitError
 import pytest
 
-from app.mirror import CommitHistoryMirror
+from gitchm.mirror import CommitHistoryMirror
 from tests.utils import FEATURE_BRANCH
 
 
@@ -212,6 +212,6 @@ class TestMirrorOpsReflect:
     async def test_reflect_error_to_new_dest(self, mirror_new_dest):
         Repo.iter_commits.side_effect = GitError
         m = mirror_new_dest
-        with patch('app.mirror.logger.error') as mock_log_error:
+        with patch('gitchm.mirror.logger.error') as mock_log_error:
             await m.reflect()
             assert mock_log_error.called

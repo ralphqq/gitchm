@@ -13,8 +13,8 @@ from unittest.mock import call, patch
 
 import pytest
 
-from app.cli import PromptItem, PromptUI
-from app.exc import TransformationError, ValidationError
+from gitchm.cli import PromptItem, PromptUI
+from gitchm.exc import TransformationError, ValidationError
 from tests.utils import set_attr_or_key
 
 
@@ -114,7 +114,7 @@ class TestPromptUIGetUserInput:
     @pytest.fixture
     def mocked_input_methods(self, mocker):
         mocked_input = mocker.patch('builtins.input', return_value='value')
-        mocked_stderr = mocker.patch('app.cli.sys.stderr.write')
+        mocked_stderr = mocker.patch('gitchm.cli.sys.stderr.write')
         mocker.patch.object(
             target=PromptItem,
             attribute='process_input',

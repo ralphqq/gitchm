@@ -7,7 +7,7 @@ Classes:
 """
 import pytest
 
-from app.cli import ItemParser
+from gitchm.cli import ItemParser
 from tests.utils import ITEM_OPS_RETURN_VALUE
 
 

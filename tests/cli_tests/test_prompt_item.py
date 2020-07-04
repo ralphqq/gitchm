@@ -9,8 +9,8 @@ Test Classes:
 from unittest.mock import call
 import pytest
 
-from app.cli import ItemParser, PromptItem
-from app.exc import TransformationError, ValidationError
+from gitchm.cli import ItemParser, PromptItem
+from gitchm.exc import TransformationError, ValidationError
 
 
 INPUT1 = 'valid-input'

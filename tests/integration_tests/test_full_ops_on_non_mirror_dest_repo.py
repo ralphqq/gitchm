@@ -13,7 +13,7 @@ import os
 from git import Repo
 import pytest
 
-from app.utils import delete_dir
+from gitchm.utils import delete_dir
 from tests.utils import (
     listify_attribute,
     load_iter_commits,

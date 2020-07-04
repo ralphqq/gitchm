@@ -3,8 +3,8 @@ Initializes CLI items and mirror settings
 """
 import os
 
-from app.cli import ItemParser, PromptItem, PromptUI
-from app.utils import to_datetime
+from gitchm.cli import ItemParser, PromptItem, PromptUI
+from gitchm.utils import to_datetime
 
 
 # Constants

@@ -1,6 +1,6 @@
 import pytest
 
-from app.mirror import CommitHistoryMirror
+from gitchm.mirror import CommitHistoryMirror
 
 
 class TestMirrorOverallInit:

@@ -11,8 +11,8 @@ from dataclasses import dataclass
 import sys
 from typing import Any, Callable, List
 
-from app.exc import TransformationError, ValidationError
-from app.utils import clean_dict
+from gitchm.exc import TransformationError, ValidationError
+from gitchm.utils import clean_dict
 
 
 # Classes

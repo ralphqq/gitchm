@@ -1,7 +1,7 @@
 import pytest
 
-from app.init import INIT, PROMPT_ITEMS, REFLECT, ui
-from app.cli import PromptItem, PromptUI
+from gitchm.init import INIT, PROMPT_ITEMS, REFLECT, ui
+from gitchm.cli import PromptItem, PromptUI
 
 
 class TestInitPromptItemsAndUI:

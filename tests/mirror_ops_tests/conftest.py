@@ -12,8 +12,8 @@ import os
 from git import Repo
 import pytest
 
-from app.mirror import CommitHistoryMirror
-from app.utils import delete_dir
+from gitchm.mirror import CommitHistoryMirror
+from gitchm.utils import delete_dir
 
 
 @pytest.fixture

@@ -6,7 +6,7 @@ from setuptools import setup
 def get_info():
     """Returns tool's details as a dict."""
     info = None
-    with open('app/__init__.py', 'r', encoding='utf-8') as f:
+    with open('gitchm/__init__.py', 'r', encoding='utf-8') as f:
         info = dict(re.findall(
             r"__(\w+)__ = '([^']+)'$",
             f.read(),
@@ -30,7 +30,7 @@ TEST_REQUIRES = [
     'pytest-asyncio>=0.12.0',
     'pytest-mock>=3.1.1',
 ]
-PACKAGES = ['app']
+PACKAGES = ['gitchm']
 
 
 # Setup
@@ -46,7 +46,7 @@ setup(
     install_requires=REQUIRES,
     extras_require={'tests': TEST_REQUIRES},
     python_requires='>=3.8',
-    entry_points = {'console_scripts': ['gitchm = app.main:main']},
+    entry_points = {'console_scripts': ['gitchm = gitchm.main:main']},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',

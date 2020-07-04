@@ -1,7 +1,7 @@
 import pytest
 
-from app.mirror import CommitHistoryMirror
-from app.utils import delete_dir
+from gitchm.mirror import CommitHistoryMirror
+from gitchm.utils import delete_dir
 from tests.utils import run_mirror_ops
 
 

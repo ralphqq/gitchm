@@ -8,7 +8,7 @@ import operator
 
 import pytest
 
-from app.utils import delete_dir
+from gitchm.utils import delete_dir
 from tests.utils import (
     DEST_FEATURE_COMMITS,
     DEST_MASTER_COMMITS,

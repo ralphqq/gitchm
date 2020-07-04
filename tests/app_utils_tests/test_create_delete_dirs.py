@@ -10,7 +10,7 @@ import shutil
 
 import pytest
 
-from app.utils import (
+from gitchm.utils import (
     create_dir,
     delete_dir,
 )

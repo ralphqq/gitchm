@@ -8,7 +8,7 @@ from typing import Generator, Union
 from git import Commit, Repo
 from git.exc import InvalidGitRepositoryError
 
-from app.utils import (
+from gitchm.utils import (
     clean_dict,
     create_dir,
     git_repo_exceptions,

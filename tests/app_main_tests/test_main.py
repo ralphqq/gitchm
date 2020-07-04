@@ -3,8 +3,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.init import INIT, REFLECT
-from app.main import main
+from gitchm.init import INIT, REFLECT
+from gitchm.main import main
 
 DEST_WORKDIR = 'some/workdir/path'
 OPTIONS = {
@@ -18,15 +18,15 @@ class TestMainEntryPoint:
     @pytest.fixture
     def mocked_main_funcs(self, mocker):
         # Mock the PromptUI instance
-        mocked_ui = mocker.patch('app.main.ui')
+        mocked_ui = mocker.patch('gitchm.main.ui')
         mocked_ui.options = OPTIONS
 
         # Mock the CommitHistoryMirror object
-        mocked_chm_constructor = mocker.patch('app.main.CommitHistoryMirror')
+        mocked_chm_constructor = mocker.patch('gitchm.main.CommitHistoryMirror')
         mocked_chm = mocked_chm_constructor.return_value
         mocked_chm.reflect = MagicMock() # AsyncMock throws warning
 
-        mocker.patch('app.main.asyncio.run')
+        mocker.patch('gitchm.main.asyncio.run')
         return mocked_ui, mocked_chm_constructor, mocked_chm
 
     @pytest.mark.parametrize('stats', [

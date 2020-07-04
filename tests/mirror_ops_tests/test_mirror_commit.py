@@ -2,7 +2,7 @@ from git import IndexFile
 from git.exc import GitError
 import pytest
 
-from app.mirror import CommitHistoryMirror
+from gitchm.mirror import CommitHistoryMirror
 from tests.utils import FEATURE_BRANCH, load_iter_commits
 
 
