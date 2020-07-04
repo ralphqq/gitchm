@@ -10,6 +10,7 @@ from app.utils import to_datetime
 # Constants
 INIT = 'init'
 REFLECT = 'reflect'
+LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
 
 
 # Item parsers (validators and transformers)
