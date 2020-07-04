@@ -21,7 +21,7 @@ Please see `requirements.txt` and `dev-requirements.txt` for full list of depend
 1. Create and activate a virtual environment
 2. Run the following:
     ```console
-    $ pip install GITHUB_REPO_UUL_HERE
+    $ pip install git+https://github.com/ralphqq/gitchm
     ```
 
 ## Usage
@@ -43,31 +43,34 @@ The tool then asks you to enter the following details:
 - **Branch in destination repo to copy commits into:** Name of branch in destination repo. This is optional. If not provided, the currently active branch is used.
 
 ## Development Setup
-1. Create and activate a virtual environment
-2. Install the development dependencies:
+1. Clone this repo
+2. Create and activate a virtual environment
+3. Install the development dependencies:
     ```console
     $ pip install -r dev-requirements.txt
     ```
-3. Run the test suite:
+4. Run the test suite:
     ```console
     $ pytest
     ```
 
 ## Contributing
 1. Fork this repo
-2. Create your feature branch:
+2. Clone your fork into your local machine
+3. Follow steps in Development Setup but skip step 1
+4. Create your feature branch:
     ```console
     $ git checkout -b feature/some-new-thing
     ```
-3. Commit your changes:
+5. Commit your changes:
     ```console
     $ git commit -m "Develop new thing"
     ```
-4. Push to the branch:
+6. Push to the branch:
     ```console
     $ git push origin feature/some-new-thing
     ```
-5. Create a pull request
+7. Create a pull request
 
 ## License
 gitchm is available under the [MIT License](https://opensource.org/licenses/MIT).
