@@ -25,9 +25,9 @@ $ pip install gitchm
 
 To install the latest development version, run the following:
 
-    ```console
-    $ pip install git+https://github.com/ralphqq/gitchm
-    ```
+```console
+$ pip install git+https://github.com/ralphqq/gitchm
+```
 
 ## Usage
 Make sure that the virtual environment where you pip installed gitchm is activated. Then run:
