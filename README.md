@@ -7,9 +7,6 @@ The current version of the tool allows you to:
 - Query commits by author, committer, and timestamp
 - Select which branch to copy commits from as well as which branch to copy commits into
 
-## Current Version
-0.1.0
-
 ## Requirements
 - [Python](https://www.python.org/downloads/release/python-380/) >= 3.8+
 - [Git](https://git-scm.com/) 1.7.0 or newer
@@ -18,8 +15,16 @@ The current version of the tool allows you to:
 Please see `requirements.txt` and `dev-requirements.txt` for full list of dependencies.
 
 ## Installation
-1. Create and activate a virtual environment
-2. Run the following:
+It's recommended to create and activate a virtual environment where gitchm can be installed.
+
+The latest stable release of gitchm can be installed from PyPI using:
+
+```console
+$ pip install gitchm
+```
+
+To install the latest development version, run the following:
+
     ```console
     $ pip install git+https://github.com/ralphqq/gitchm
     ```
@@ -43,7 +48,7 @@ The tool then asks you to enter the following details:
 - **Branch in destination repo to copy commits into:** Name of branch in destination repo. This is optional. If not provided, the currently active branch is used.
 
 ## Development Setup
-1. Clone this repo
+1. Clone this repo at https://github.com/ralphqq/gitchm
 2. Create and activate a virtual environment
 3. Install the development dependencies:
     ```console
@@ -55,7 +60,7 @@ The tool then asks you to enter the following details:
     ```
 
 ## Contributing
-1. Fork this repo
+1. Fork this repo at https://github.com/ralphqq/gitchm
 2. Clone your fork into your local machine
 3. Follow steps in Development Setup but skip step 1
 4. Create your feature branch:
