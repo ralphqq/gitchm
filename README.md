@@ -1,4 +1,7 @@
 # gitchm
+
+[![Build Status](https://travis-ci.com/ralphqq/gitchm.svg?branch=master)](https://travis-ci.com/ralphqq/gitchm)
+
 A CLI tool that lets you replicate a git repo's commit history without reproducing the working tree. It works by creating commits in the destination repo using the details (author, committer, timestamp, and message) of commits from the source repo. Changes to the destination working tree are made only by writing the commit messages into an auto-generated text file. Files and directories from the source repo are not copied.
 
 The current version of the tool allows you to:
