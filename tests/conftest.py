@@ -31,19 +31,18 @@ from tests.utils import (
 )
 
 
-PARENT_DIR = 'chm-test-session'
-SOURCE_WORKDIR = 'project-src'
+PARENT_DIR = "chm-test-session"
+SOURCE_WORKDIR = "project-src"
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def init_chm_test_session():
     """Creates and removes the main directory for the test session."""
     tmp_dir = tempfile.gettempdir()
-    
+
     # Create the main directory
     parent_dir_path = create_dir(
-        full_path=os.path.join(tmp_dir, PARENT_DIR),
-        on_conflict='replace'
+        full_path=os.path.join(tmp_dir, PARENT_DIR), on_conflict="replace"
     )
     yield parent_dir_path
 
@@ -51,7 +50,7 @@ def init_chm_test_session():
     delete_dir(parent_dir_path)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def init_source_repo(init_chm_test_session):
     """Sets up and tears down a non-bare git repo.
 
@@ -60,24 +59,21 @@ def init_source_repo(init_chm_test_session):
             source_workdir_path,
             parent_dir_path,
             commits_from_json,
-        
+
     """
     parent_dir_path = init_chm_test_session
 
     # Create source workdir
     source_workdir_path = create_dir(
         full_path=os.path.join(parent_dir_path, SOURCE_WORKDIR),
-        on_conflict='replace'
+        on_conflict="replace",
     )
 
     # Create and initiallize source repo
     repo = Repo.init(source_workdir_path)
 
     # Make the commits
-    commits = make_commits(
-        repo=repo,
-        commits_data=load_commit_data()
-    )
+    commits = make_commits(repo=repo, commits_data=load_commit_data())
 
     yield (
         source_workdir_path,
@@ -100,15 +96,17 @@ def iter_commits(init_source_repo):
     """Returns a generator of Commit objects."""
     source_repo_path, _, _ = init_source_repo
     repo = Repo(source_repo_path)
-    return repo.iter_commits('master')
+    return repo.iter_commits("master")
 
 
 @pytest.fixture
 def empty_iter_commits():
     """Generator of empty list."""
+
     def empty_list_gen():
         for p in []:
             yield p
+
     return empty_list_gen()
 
 
@@ -119,11 +117,8 @@ def non_git_repo(init_source_repo):
 
     # Create
     non_git_dir_path = create_dir(
-        full_path=os.path.join(
-            tempfile.gettempdir(),
-            'non-git-repo'
-        ),
-        on_conflict='replace'
+        full_path=os.path.join(tempfile.gettempdir(), "non-git-repo"),
+        on_conflict="replace",
     )
 
     yield non_git_dir_path
@@ -145,11 +140,11 @@ def dest_repo_tree(dest_repo_no_tree):
     repo = dest_repo_no_tree
 
     # Create and commit a file
-    fpath = os.path.join(repo.working_dir, 'something.txt')
-    with open(fpath, 'w') as f:
-        f.write(f'Mundul vult decipi, ergo decipiatur.')
+    fpath = os.path.join(repo.working_dir, "something.txt")
+    with open(fpath, "w") as f:
+        f.write("Mundul vult decipi, ergo decipiatur.")
     repo.index.add([fpath])
-    repo.index.commit('Dummy commit')
+    repo.index.commit("Dummy commit")
 
     yield repo
 
@@ -164,7 +159,7 @@ def dest_repo_mirror_master(non_git_repo, src_repo):
     make_commits(
         repo=repo,
         commits_data=commits_data[:DEST_MASTER_COMMITS],
-        has_mirror=True
+        has_mirror=True,
     )
 
     # Create new branch (but do not check out)
@@ -177,13 +172,13 @@ def dest_repo_mirror_master(non_git_repo, src_repo):
     # Check first if dest repo workdir still exists
     # since sometimes, it can be deleted by another fixture
     if os.path.exists(repo.working_dir):
-        if repo.active_branch.name != 'master':
+        if repo.active_branch.name != "master":
             # Make sure to check out master before deleting other branches
             repo.heads.master.checkout(force=True)
 
         # Delete branches except 'master' and FEATURE_BRANCH
         for branch in repo.branches:
-            if branch.name not in ['master', FEATURE_BRANCH]:
+            if branch.name not in ["master", FEATURE_BRANCH]:
                 repo.delete_head(branch)
 
 
@@ -200,6 +195,6 @@ def dest_repo_mirror_feature(dest_repo_mirror_master, src_repo):
     make_commits(
         repo=repo,
         commits_data=commits_data[DEST_MASTER_COMMITS:DEST_FEATURE_COMMITS],
-        has_mirror=True
+        has_mirror=True,
     )
     yield repo

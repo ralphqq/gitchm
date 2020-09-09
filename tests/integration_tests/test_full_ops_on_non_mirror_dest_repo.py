@@ -1,5 +1,5 @@
 """
-End-to-end mirror ops tests for different scenarios 
+End-to-end mirror ops tests for different scenarios
 involving non-mirror destination repos.
 
 Test Classes:
@@ -14,17 +14,13 @@ from git import Repo
 import pytest
 
 from gitchm.utils import delete_dir
-from tests.utils import (
-    listify_attribute,
-    load_iter_commits,
-    read_gitchm
-)
+from tests.utils import listify_attribute, load_iter_commits, read_gitchm
 
 
 class TestMirrorOpsAutoDestRepo:
     """Case where destination repo is not specified.
 
-    This class will also be inherited by other test classes in this 
+    This class will also be inherited by other test classes in this
     module.
     """
 
@@ -36,11 +32,11 @@ class TestMirrorOpsAutoDestRepo:
 
     @pytest.mark.asyncio
     async def test_has_correct_commits(self, m):
-        src_commits = load_iter_commits(m.source_repo, mode='obj')
-        src_messages = listify_attribute(src_commits, 'message')
-        src_hashes = listify_attribute(src_commits, 'hexsha')
-        dst_commits = load_iter_commits(m.dest_repo, mode='obj')
-        dst_messages = listify_attribute(dst_commits, 'message')
+        src_commits = load_iter_commits(m.source_repo, mode="obj")
+        src_messages = listify_attribute(src_commits, "message")
+        src_hashes = listify_attribute(src_commits, "hexsha")
+        dst_commits = load_iter_commits(m.dest_repo, mode="obj")
+        dst_messages = listify_attribute(dst_commits, "message")
         dst_replicated_hashes = read_gitchm(m.dest_repo.working_dir)
 
         assert set(src_messages).issubset(set(dst_messages))

@@ -2,10 +2,9 @@ import pytest
 
 
 class TestCheckTreeState:
-
     @pytest.fixture
     def mirror(self, modified_chm):
-        return modified_chm['mirror']
+        return modified_chm["mirror"]
 
     def test_check_dest_no_tree(self, mirror, dest_repo_no_tree):
         mirror.dest_repo = dest_repo_no_tree

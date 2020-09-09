@@ -16,8 +16,8 @@ def modified_chm(init_source_repo):
     mirror = ModifiedCHM(source_workdir)
     mirror._init_source_repo()
     return {
-        'mirror': mirror,
-        'source_workdir': source_workdir,
-        'parent_dir': parent_dir_path,
-        'commits': commit_data,
+        "mirror": mirror,
+        "source_workdir": source_workdir,
+        "parent_dir": parent_dir_path,
+        "commits": commit_data,
     }

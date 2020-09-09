@@ -18,10 +18,9 @@ from gitchm.utils import format_stats
 def main() -> None:
     try:
         logging.basicConfig(
-            format='%(message)s',
-            level=getattr(logging, LOGLEVEL)
+            format="%(message)s", level=getattr(logging, LOGLEVEL)
         )
-        logging.debug('Starting up')
+        logging.debug("Starting up")
 
         ui.start()
         init_params = ui.options[INIT]
@@ -29,15 +28,15 @@ def main() -> None:
 
         chm = CommitHistoryMirror(**init_params)
         asyncio.run(chm.reflect(**reflect_params))
-        logging.info(f'Done: {format_stats(chm.stats)}')
-        if chm.stats['replicated'] > 0:
+        logging.info(f"Done: {format_stats(chm.stats)}")
+        if chm.stats["replicated"] > 0:
             logging.info(
-                f'To view replicated commits, '
-                f'go to directory {chm.dest_workdir}'
+                f"To view replicated commits, "
+                f"go to directory {chm.dest_workdir}"
             )
 
     except KeyboardInterrupt:
-        logging.info('Canceled')
+        logging.info("Canceled")
 
     except Exception as e:
-        logging.error(f'An unhandled error occurred: {e}')
+        logging.error(f"An unhandled error occurred: {e}")

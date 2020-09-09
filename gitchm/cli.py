@@ -17,13 +17,14 @@ from gitchm.utils import clean_dict
 
 # Classes
 
+
 @dataclass
 class ItemParser:
     """Wraps a validator or transformation function."""
 
     apply: Callable
     params: dict = None
-    error_msg: str = ''
+    error_msg: str = ""
 
 
 @dataclass
@@ -34,14 +35,14 @@ class PromptItem:
     message: str
     is_required: bool = False
     data_type: type = str
-    active_on: 'PromptItem' = None
-    inactive_on: 'PromptItem' = None
-    group: str = 'menu'
+    active_on: "PromptItem" = None
+    inactive_on: "PromptItem" = None
+    group: str = "menu"
     validators: List[ItemParser] = None
     transformers: List[ItemParser] = None
 
     def __repr__(self) -> str:
-        return f'<PromptItem {self.name}>'
+        return f"<PromptItem {self.name}>"
 
     def process_input(self, value: str) -> None:
         """Applies validators and transformers to raw value of input."""
@@ -53,12 +54,12 @@ class PromptItem:
     def _validate(self, value: str) -> bool:
         """Checks if value meets validation rules.
 
-        This method returns `True` only when value 
-        passes all validation rules; otherwise, 
+        This method returns `True` only when value
+        passes all validation rules; otherwise,
         it raises `ValidationError`.
         """
         if not value and self.is_required:
-            raise ValidationError(f'This is a required field.')
+            raise ValidationError("This is a required field.")
 
         if self.validators is not None:
             for v in self.validators:
@@ -67,7 +68,7 @@ class PromptItem:
 
                 if not result:
                     raise ValidationError(
-                        f'Error validating {self.name}: {v.error_msg}'
+                        f"Error validating {self.name}: {v.error_msg}"
                     )
 
         return True
@@ -88,11 +89,10 @@ class PromptItem:
             return val
 
         except Exception as e:
-            raise TransformationError(f'Error during transformation {e}')
+            raise TransformationError(f"Error during transformation {e}")
 
 
 class PromptUI:
-
     def __init__(self, prompt_items: List[PromptItem]) -> None:
         self.prompt_items = prompt_items
         self.options = defaultdict(dict)
@@ -117,7 +117,7 @@ class PromptUI:
                 return prompt_item.process_input(value)
 
             except (TransformationError, ValidationError) as e:
-                sys.stderr.write(f'{e}')
+                sys.stderr.write(f"{e}")
 
             except KeyboardInterrupt:
                 break
@@ -127,8 +127,10 @@ class PromptUI:
         activator = prompt_item.active_on
         inactivator = prompt_item.inactive_on
         return bool(
-            (activator and getattr(activator, 'value', None) is None) or
-            (inactivator and getattr(inactivator, 'value', None) is not None)
+            (activator and getattr(activator, "value", None) is None)
+            or (
+                inactivator and getattr(inactivator, "value", None) is not None
+            )
         )
 
     def _finalize_options(self) -> None:

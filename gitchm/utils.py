@@ -30,35 +30,39 @@ logger = logging.getLogger(__name__)
 
 # Decorators
 
+
 def git_repo_exceptions(func):
     """Handles GitPython exceptions."""
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except GitError as e:
-            logger.error(f'Git error in {func.__name__}: {e}')
+            logger.error(f"Git error in {func.__name__}: {e}")
             raise e
+
     return wrapper
 
 
 # Helper functions
 
-def create_dir(full_path: str, on_conflict: str = 'raise') -> str:
+
+def create_dir(full_path: str, on_conflict: str = "raise") -> str:
     """Creates directory in given path."""
     already_exists = os.path.exists(full_path)
 
     if already_exists:
-        if on_conflict == 'raise':
-            raise ValueError(f'{full_path} already exists.')
-        elif on_conflict == 'replace':
+        if on_conflict == "raise":
+            raise ValueError(f"{full_path} already exists.")
+        elif on_conflict == "replace":
             # Delete existing dir to be re-created later
             delete_dir(full_path)
-        elif on_conflict == 'resolve':
+        elif on_conflict == "resolve":
             # Append a string to directory name
             # to make the name unique
-            postfix = datetime.now().strftime('%Y%m%d%H%M%S')
-            full_path = f'{full_path}-{postfix}'
+            postfix = datetime.now().strftime("%Y%m%d%H%M%S")
+            full_path = f"{full_path}-{postfix}"
 
     os.makedirs(full_path)
     return full_path
@@ -75,7 +79,7 @@ def clean_dict(orig_dict: dict) -> dict:
     return {k: v for k, v in orig_dict.items() if v is not None}
 
 
-def create_actor(name: str = '', email: str = '') -> Actor:
+def create_actor(name: str = "", email: str = "") -> Actor:
     """Creates an instance of `Actor` class.
 
     Raises:
@@ -83,25 +87,25 @@ def create_actor(name: str = '', email: str = '') -> Actor:
     """
     if not name and not email:
         raise IncompleteCommitDetails(
-            'Cannot create author/committer: No name or email provided'
+            "Cannot create author/committer: No name or email provided"
         )
     return Actor(name=name, email=email)
 
 
-def to_datetime(text: str, output: str = 'dt') -> Union[datetime, int]:
+def to_datetime(text: str, output: str = "dt") -> Union[datetime, int]:
     """Converts str into datetime or timestamp.
 
     Args:
         text (str): The date/time string to convert
-        output (str): Indicates whether to return the result as 
+        output (str): Indicates whether to return the result as
             datetime object or as Unix timestamp
     """
-    if output not in ['dt', 'ts']:
+    if output not in ["dt", "ts"]:
         raise ValueError("`output` can only be 'dt' or 'ts'")
 
     try:
         result = parse(text)
-        if output == 'ts':
+        if output == "ts":
             result = result.timestamp()
         return result
 
@@ -114,4 +118,4 @@ def to_datetime(text: str, output: str = 'dt') -> Union[datetime, int]:
 
 def format_stats(stats: dict) -> str:
     """Prepares stats for logging."""
-    return ', '.join([f'{k}: {v} commits' for k, v in stats.items()])
+    return ", ".join([f"{k}: {v} commits" for k, v in stats.items()])

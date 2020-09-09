@@ -22,10 +22,10 @@ def chm(init_source_repo):
     source_repo_path, parent_dir_path, commit_data = init_source_repo
     mirror = CommitHistoryMirror(source_repo_path)
     yield {
-        'mirror': mirror,
-        'source_workdir': source_repo_path,
-        'parent_dir': parent_dir_path,
-        'commits': commit_data,
+        "mirror": mirror,
+        "source_workdir": source_repo_path,
+        "parent_dir": parent_dir_path,
+        "commits": commit_data,
     }
 
     # Delete dest working dir
@@ -34,16 +34,16 @@ def chm(init_source_repo):
 
 # All fixtures below need to be refactored
 
+
 @pytest.fixture
 def chm_dest_tree(dest_repo_tree, init_source_repo):
     """CHM session with dest repo that has no tree."""
     dest_repo = dest_repo_tree
     source_repo_path, _, _ = init_source_repo
     mirror = CommitHistoryMirror(
-        source_workdir=source_repo_path,
-        dest_workdir=dest_repo.working_dir
+        source_workdir=source_repo_path, dest_workdir=dest_repo.working_dir
     )
-    return {'mirror': mirror}
+    return {"mirror": mirror}
 
 
 @pytest.fixture
@@ -52,10 +52,9 @@ def chm_dest_master(dest_repo_mirror_master, init_source_repo):
     dest_repo = dest_repo_mirror_master
     source_repo_path, _, _ = init_source_repo
     mirror = CommitHistoryMirror(
-        source_workdir=source_repo_path,
-        dest_workdir=dest_repo.working_dir
+        source_workdir=source_repo_path, dest_workdir=dest_repo.working_dir
     )
-    return {'mirror': mirror}
+    return {"mirror": mirror}
 
 
 @pytest.fixture
@@ -64,7 +63,6 @@ def chm_dest_feature(dest_repo_mirror_feature, init_source_repo):
     dest_repo = dest_repo_mirror_feature
     source_repo_path, _, _ = init_source_repo
     mirror = CommitHistoryMirror(
-        source_workdir=source_repo_path,
-        dest_workdir=dest_repo.working_dir
+        source_workdir=source_repo_path, dest_workdir=dest_repo.working_dir
     )
-    return {'mirror': mirror}
+    return {"mirror": mirror}

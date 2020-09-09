@@ -11,12 +11,11 @@ from gitchm.cli import ItemParser
 from tests.utils import ITEM_OPS_RETURN_VALUE
 
 
-PARAMS = {'a': 1, 'b': 2}
-ERROR_MSG = 'Error'
+PARAMS = {"a": 1, "b": 2}
+ERROR_MSG = "Error"
 
 
 class TestValidatorTransformer:
-
     def test_creation_with_values(self, mocked_item_func):
         ops = ItemParser(mocked_item_func, params=PARAMS, error_msg=ERROR_MSG)
         assert ops
