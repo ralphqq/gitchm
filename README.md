@@ -62,23 +62,33 @@ The tool then asks you to enter the following details:
     $ pytest
     ```
 
+**Note:** To ensure coding style consistency, this project uses pre-commit hooks to run `black` and `flake8`. You may also want to initialize pre-commits into your local development clone (this is strongly recommended if you want to contribute, see `Contributing` section).
+
+```console
+$ pre-commit install
+```
+
 ## Contributing
 1. Fork this repo at https://github.com/ralphqq/gitchm
 2. Clone your fork into your local machine
 3. Follow steps in Development Setup but skip step 1
-4. Create your feature branch:
+4. Initialize pre-commit hooks
+    ```console
+    $ pre-commit install
+    ```
+5. Create your feature branch:
     ```console
     $ git checkout -b feature/some-new-thing
     ```
-5. Commit your changes:
+6. Commit your changes:
     ```console
     $ git commit -m "Develop new thing"
     ```
-6. Push to the branch:
+7. Push to the branch:
     ```console
     $ git push origin feature/some-new-thing
     ```
-7. Create a pull request
+8. Create a pull request
 
 ## License
 gitchm is available under the [MIT License](https://opensource.org/licenses/MIT).
