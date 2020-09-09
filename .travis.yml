@@ -4,6 +4,6 @@ python:
 before_install:
   - pip install -U pip
 install:
-  - pip install -r dev-requirements.txt
+  - pip install -U -r dev-requirements.txt
 script:
   - pytest
